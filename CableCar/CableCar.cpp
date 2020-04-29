@@ -6,21 +6,18 @@
 
 int main(int argc, char* args[]) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "Failed to initialize video: " << SDL_GetError()
-                  << std::endl;
+        std::cerr << "Failed to initialize video: " << SDL_GetError() << std::endl;
         return 1;
     }
 
     SDL_Window* window =
-        SDL_CreateWindow("CableCar", SDL_WINDOWPOS_UNDEFINED,
-                         SDL_WINDOWPOS_UNDEFINED, 1024, 786, SDL_WINDOW_SHOWN);
+        SDL_CreateWindow("CableCar", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 786, SDL_WINDOW_SHOWN);
     if (window == nullptr) {
         std::cerr << "Failed to create window: " << SDL_GetError();
         return 1;
     }
 
-    SDL_Renderer* renderer =
-        SDL_CreateRenderer(window, 4, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, 4, SDL_RENDERER_ACCELERATED);
 
     Texture::init(renderer);
 

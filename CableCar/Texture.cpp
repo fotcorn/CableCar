@@ -15,8 +15,7 @@ namespace fs = std::filesystem;
 
 void Texture::init(SDL_Renderer* renderer) {
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        throw std::runtime_error(
-            "Failed to initialize SDL_image with png support");
+        throw std::runtime_error("Failed to initialize SDL_image with png support");
     }
     Texture::renderer = renderer;
 
@@ -44,21 +43,18 @@ std::shared_ptr<Texture> Texture::loadImage(std::string path) {
 
     fs::path fsPath = Texture::dataPath / path;
     if (!fs::exists(fsPath)) {
-        throw std::runtime_error(std::string("Failed to find image file: ") +
-                                 fsPath.string());
+        throw std::runtime_error(std::string("Failed to find image file: ") + fsPath.string());
     }
 
     SDL_Surface* surface = IMG_Load(fsPath.string().c_str());
     if (surface == nullptr) {
-        throw std::runtime_error(std::string("Failed to load image:") +
-                                 std::string(IMG_GetError()));
+        throw std::runtime_error(std::string("Failed to load image:") + std::string(IMG_GetError()));
     }
 
     image->texture = SDL_CreateTextureFromSurface(Texture::renderer, surface);
     if (image->texture == nullptr) {
-        throw std::runtime_error(
-            std::string("Failed to convert loaded image to texture: ") +
-            std::string(SDL_GetError()));
+        throw std::runtime_error(std::string("Failed to convert loaded image to texture: ") +
+                                 std::string(SDL_GetError()));
     }
 
     SDL_FreeSurface(surface);
