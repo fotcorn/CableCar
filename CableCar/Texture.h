@@ -13,11 +13,13 @@ class Texture {
     ~Texture();
 
     void render();
+    const int width;
+    const int height;
 
     static void init(SDL_Renderer* pixelFormat);
 
   private:
-    Texture() = default;
+    Texture(int width, int height) : width(width), height(height){};
     SDL_Texture* texture = nullptr;
     static SDL_Renderer* renderer;
     static std::filesystem::path dataPath;

@@ -39,8 +39,6 @@ void Texture::init(SDL_Renderer* renderer) {
 std::shared_ptr<Texture> Texture::loadImage(std::string path) {
     assert(Texture::renderer != nullptr);
 
-    auto image = std::shared_ptr<Texture>(new Texture());
-
     fs::path fsPath = Texture::dataPath / path;
     if (!fs::exists(fsPath)) {
         throw std::runtime_error(std::string("Failed to find image file: ") + fsPath.string());
@@ -51,6 +49,7 @@ std::shared_ptr<Texture> Texture::loadImage(std::string path) {
         throw std::runtime_error(std::string("Failed to load image:") + std::string(IMG_GetError()));
     }
 
+    auto image = std::shared_ptr<Texture>(new Texture(surface->w, surface->h));
     image->texture = SDL_CreateTextureFromSurface(Texture::renderer, surface);
     if (image->texture == nullptr) {
         throw std::runtime_error(std::string("Failed to convert loaded image to texture: ") +
