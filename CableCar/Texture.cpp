@@ -60,10 +60,6 @@ std::shared_ptr<Texture> Texture::loadImage(std::string path) {
     return image;
 }
 
-void Texture::render() {
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-}
-
 Texture::~Texture() {
     SDL_DestroyTexture(texture);
 }

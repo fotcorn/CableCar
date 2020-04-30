@@ -12,7 +12,6 @@ class Texture {
     static std::shared_ptr<Texture> loadImage(std::string path);
     ~Texture();
 
-    void render();
     const int width;
     const int height;
 

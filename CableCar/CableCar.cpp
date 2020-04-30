@@ -24,8 +24,6 @@ int main(int argc, char* argv[]) {
 
         renderer.clear();
 
-        texture->render();
-
         renderer.drawTexture(texture, 50, 50, 100, 100);
 
         renderer.flip();
