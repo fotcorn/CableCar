@@ -23,4 +23,6 @@ class Texture {
     SDL_Texture* texture = nullptr;
     static SDL_Renderer* renderer;
     static std::filesystem::path dataPath;
+
+    friend class Renderer;
 };
