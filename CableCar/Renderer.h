@@ -23,4 +23,8 @@ class Renderer {
   private:
     SDL_Renderer* renderer;
     SDL_Window* window;
+    int viewportWidth;
+    int viewportHeight;
+    float viewportToVirtualX;
+    float viewportToVirtualY;
 };

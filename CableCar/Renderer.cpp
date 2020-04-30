@@ -17,23 +17,25 @@ Renderer::Renderer(int screenWidth, int screenHeight) {
     renderer = SDL_CreateRenderer(window, 4, SDL_RENDERER_ACCELERATED);
 
     // based on http://www.david-amador.com/2013/04/opengl-2d-independent-resolution-rendering/
-    int width = screenWidth;
-    int height = static_cast<int>(width / VIRTUAL_ASPECT_RATIO + 0.5f);
+    viewportWidth = screenWidth;
+    viewportHeight = static_cast<int>(viewportWidth / VIRTUAL_ASPECT_RATIO + 0.5f);
 
-    if (height > screenHeight) {
-        height = screenHeight;
-        width = static_cast<int>(height * VIRTUAL_ASPECT_RATIO + 0.5f);
+    if (viewportHeight > screenHeight) {
+        viewportHeight = screenHeight;
+        viewportWidth = static_cast<int>(viewportHeight * VIRTUAL_ASPECT_RATIO + 0.5f);
     }
 
-    // set up the new viewport centered in the backbuffer
-    int viewportX = (screenWidth / 2) - (width / 2);
-    int viewportY = (screenHeight / 2) - (height / 2);
+    viewportToVirtualX = static_cast<float>(viewportWidth) / static_cast<float>(VIRTUAL_WIDTH);
+    viewportToVirtualY = static_cast<float>(viewportHeight) / static_cast<float>(VIRTUAL_HEIGHT);
+
+    int viewportX = (screenWidth / 2) - (viewportWidth / 2);
+    int viewportY = (screenHeight / 2) - (viewportHeight / 2);
 
     SDL_Rect viewport;
     viewport.x = viewportX;
     viewport.y = viewportY;
-    viewport.w = width;
-    viewport.h = height;
+    viewport.w = viewportWidth;
+    viewport.h = viewportHeight;
     SDL_RenderSetViewport(renderer, &viewport);
 }
 
@@ -50,6 +52,16 @@ void Renderer::flip() {
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawTexture(std::shared_ptr<Texture> texture, int virtualX, int virtualY, int width, int height) {
-    SDL_RenderCopy(renderer, texture->texture, nullptr, nullptr);
+void Renderer::drawTexture(std::shared_ptr<Texture> texture,
+                           int virtualX,
+                           int virtualY,
+                           int virtualWidth,
+                           int virtualHeight) {
+    SDL_Rect destinationRect;
+    destinationRect.x = virtualX * viewportToVirtualX;
+    destinationRect.y = virtualY * viewportToVirtualY;
+    destinationRect.w = virtualWidth * viewportToVirtualX;
+    destinationRect.h = virtualHeight * viewportToVirtualY;
+
+    SDL_RenderCopy(renderer, texture->texture, nullptr, &destinationRect);
 }
