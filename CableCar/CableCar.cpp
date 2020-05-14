@@ -4,12 +4,11 @@
 #include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]) {
-    // weird resolution to test aspect ratio and resolution independent rendering
-    Renderer renderer(1700, 900);
+    Renderer renderer(1920, 1080);
 
     Texture::init(renderer.sdlRenderer());
 
-    std::shared_ptr<Texture> texture = Texture::loadImage("level.png");
+    std::shared_ptr<Texture> texture = Texture::loadImage("level2.png");
     float textureAspectRatio = static_cast<float>(texture->height) / static_cast<float>(texture->width);
 
     SDL_Event event;
@@ -25,7 +24,7 @@ int main(int argc, char* argv[]) {
 
         renderer.clear();
 
-        renderer.drawTexture(texture, 50, 50, 100, static_cast<int>(100 * textureAspectRatio));
+        renderer.drawTexture(texture, 0, 0, 1920, 1080);
 
         renderer.flip();
     }
