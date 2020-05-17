@@ -1,12 +1,18 @@
 #include <SDL2/SDL.h>
 
+#include "FilesystemAssetManager.h"
 #include "Renderer.h"
+#include "Services.h"
 #include "Texture.h"
 
 int main(int argc, char* argv[]) {
-    Renderer renderer(1920, 1080);
+    Services services;
 
-    Texture::init(renderer.sdlRenderer());
+    Renderer renderer(1920, 1080);
+    services.provideRenderer(&renderer);
+
+    FilesystemAssetManager assetManager("data");
+    services.provideAssetManager(&assetManager);
 
     std::shared_ptr<Texture> texture = Texture::loadImage("level.png");
     float textureAspectRatio = static_cast<float>(texture->height) / static_cast<float>(texture->width);

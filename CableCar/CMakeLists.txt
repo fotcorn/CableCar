@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.8)
 
-add_executable (CableCar "CableCar.cpp" "Color.h" "Texture.cpp" "Texture.h" "Renderer.cpp" "Renderer.h")
+add_executable (CableCar "CableCar.cpp" "Color.h" "Texture.cpp" "Texture.h" "Renderer.cpp" "Renderer.h" "FilesystemAssetManager.cpp" "FilesystemAssetManager.h" "AssetManager.h" "Services.h" "Services.cpp")
 
 set_property(TARGET CableCar PROPERTY CXX_STANDARD 17)
 

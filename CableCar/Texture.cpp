@@ -7,48 +7,13 @@
 #include <memory>
 #include <stdexcept>
 
-#include "filesystem.hpp"
-
-namespace fs = ghc::filesystem;
-
-void Texture::init(SDL_Renderer* renderer) {
-    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        throw std::runtime_error("Failed to initialize SDL_image with png support");
-    }
-    Texture::renderer = renderer;
-
-    fs::path directory = fs::current_path();
-    bool found = false;
-    while (!found) {
-        for (auto entry : fs::directory_iterator(directory)) {
-            if (entry.is_directory() && entry.path().filename() == "data") {
-                Texture::dataPath = entry.path();
-                found = true;
-            }
-        }
-
-        directory = directory.parent_path();
-        if (!directory.has_relative_path()) {
-            throw std::runtime_error("Could not find data directory");
-        }
-    }
-}
+#include "Services.h"
 
 std::shared_ptr<Texture> Texture::loadImage(std::string path) {
-    assert(Texture::renderer != nullptr);
-
-    fs::path fsPath = Texture::dataPath / path;
-    if (!fs::exists(fsPath)) {
-        throw std::runtime_error(std::string("Failed to find image file: ") + fsPath.string());
-    }
-
-    SDL_Surface* surface = IMG_Load(fsPath.string().c_str());
-    if (surface == nullptr) {
-        throw std::runtime_error(std::string("Failed to load image:") + std::string(IMG_GetError()));
-    }
+    SDL_Surface* surface = Services::assetManager().loadImage(path);
 
     auto image = std::shared_ptr<Texture>(new Texture(surface->w, surface->h));
-    image->texture = SDL_CreateTextureFromSurface(Texture::renderer, surface);
+    image->texture = SDL_CreateTextureFromSurface(Services::renderer().sdlRenderer(), surface);
     if (image->texture == nullptr) {
         throw std::runtime_error(std::string("Failed to convert loaded image to texture: ") +
                                  std::string(SDL_GetError()));
@@ -61,6 +26,3 @@ std::shared_ptr<Texture> Texture::loadImage(std::string path) {
 Texture::~Texture() {
     SDL_DestroyTexture(texture);
 }
-
-SDL_Renderer* Texture::renderer = nullptr;
-fs::path Texture::dataPath = fs::path();
