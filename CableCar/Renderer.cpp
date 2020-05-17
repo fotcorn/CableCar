@@ -14,7 +14,10 @@ Renderer::Renderer(int screenWidth, int screenHeight) {
         throw std::runtime_error(std::string("Failed to create window: ") + SDL_GetError());
     }
 
-    renderer = SDL_CreateRenderer(window, 4, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr) {
+        throw std::runtime_error(std::string("Failed to create renderer: ") + SDL_GetError());
+    }
 
     // based on http://www.david-amador.com/2013/04/opengl-2d-independent-resolution-rendering/
     viewportWidth = screenWidth;
