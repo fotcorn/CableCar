@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
 
     Texture::init(renderer.sdlRenderer());
 
-    std::shared_ptr<Texture> texture = Texture::loadImage("level2.png");
+    std::shared_ptr<Texture> texture = Texture::loadImage("level.png");
     float textureAspectRatio = static_cast<float>(texture->height) / static_cast<float>(texture->width);
 
     SDL_Event event;
