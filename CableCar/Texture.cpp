@@ -1,17 +1,15 @@
-#pragma once
-
 #include "Texture.h"
 
 #include <SDL_image.h>
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
-#include <filesystem>
-#include <iostream>
+#include "filesystem.hpp"
 
-namespace fs = std::filesystem;
+namespace fs = ghc::filesystem;
 
 void Texture::init(SDL_Renderer* renderer) {
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {

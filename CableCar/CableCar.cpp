@@ -1,7 +1,7 @@
+#include <SDL2/SDL.h>
+
 #include "Renderer.h"
 #include "Texture.h"
-
-#include <SDL2/SDL.h>
 
 int main(int argc, char* argv[]) {
     Renderer renderer(1920, 1080);

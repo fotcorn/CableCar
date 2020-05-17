@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Texture.h"
-
 #include <SDL2/SDL.h>
+
+#include "Texture.h"
 
 constexpr int VIRTUAL_WIDTH = 1920;
 constexpr int VIRTUAL_HEIGHT = 1080;
@@ -21,8 +21,8 @@ class Renderer {
     void drawTexture(std::shared_ptr<Texture> texture, int virtualX, int virtualY, int width, int height);
 
   private:
-    SDL_Renderer* renderer;
-    SDL_Window* window;
+    SDL_Renderer* renderer = nullptr;
+    SDL_Window* window = nullptr;
     int viewportWidth;
     int viewportHeight;
     float viewportToVirtualX;

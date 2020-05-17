@@ -1,8 +1,9 @@
 #pragma once
 
-#include <filesystem>
 #include <memory>
 #include <string>
+
+#include "filesystem.hpp"
 
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -21,7 +22,7 @@ class Texture {
     Texture(int width, int height) : width(width), height(height){};
     SDL_Texture* texture = nullptr;
     static SDL_Renderer* renderer;
-    static std::filesystem::path dataPath;
+    static ghc::filesystem::path dataPath;
 
     friend class Renderer;
 };
