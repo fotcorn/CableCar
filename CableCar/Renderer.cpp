@@ -55,16 +55,12 @@ void Renderer::flip() {
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawTexture(std::shared_ptr<Texture> texture,
-                           int virtualX,
-                           int virtualY,
-                           int virtualWidth,
-                           int virtualHeight) {
+void Renderer::drawTexture(const Texture& texture, int virtualX, int virtualY, int virtualWidth, int virtualHeight) {
     SDL_Rect destinationRect;
     destinationRect.x = virtualX * viewportToVirtualX;
     destinationRect.y = virtualY * viewportToVirtualY;
     destinationRect.w = virtualWidth * viewportToVirtualX;
     destinationRect.h = virtualHeight * viewportToVirtualY;
 
-    SDL_RenderCopy(renderer, texture->texture, nullptr, &destinationRect);
+    SDL_RenderCopy(renderer, texture.m_texture, nullptr, &destinationRect);
 }

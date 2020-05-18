@@ -5,16 +5,21 @@
 
 struct SDL_Renderer;
 struct SDL_Texture;
+struct SDL_Surface;
 
 class Texture {
   public:
-    static std::shared_ptr<Texture> loadImage(std::string path);
+    explicit Texture(const std::string& path);
+    explicit Texture(SDL_Surface* surface);
     ~Texture();
-    const int width;
-    const int height;
+    int width() const;
+    int height() const;
 
   private:
-    Texture(int width, int height) : width(width), height(height){};
-    SDL_Texture* texture = nullptr;
+    void init(SDL_Surface* surface);
+
+    SDL_Texture* m_texture = nullptr;
+    int m_width;
+    int m_height;
     friend class Renderer;
 };

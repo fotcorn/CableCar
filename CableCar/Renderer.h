@@ -18,7 +18,7 @@ class Renderer {
     void clear();
     void flip();
 
-    void drawTexture(std::shared_ptr<Texture> texture, int virtualX, int virtualY, int width, int height);
+    void drawTexture(const Texture& texture, const int virtualX, const int virtualY, const int width, const int height);
 
   private:
     SDL_Renderer* renderer = nullptr;

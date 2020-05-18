@@ -14,8 +14,7 @@ int main(int argc, char* argv[]) {
     FilesystemAssetManager assetManager("data");
     services.provideAssetManager(&assetManager);
 
-    std::shared_ptr<Texture> texture = Texture::loadImage("level.png");
-    float textureAspectRatio = static_cast<float>(texture->height) / static_cast<float>(texture->width);
+    Texture texture = Texture("level.png");
 
     SDL_Event event;
     bool running = true;
