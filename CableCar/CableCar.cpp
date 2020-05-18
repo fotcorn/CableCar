@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 
 #include "FilesystemAssetManager.h"
+#include "Level.h"
 #include "Renderer.h"
 #include "Services.h"
 #include "Texture.h"
@@ -14,7 +15,8 @@ int main(int argc, char* argv[]) {
     FilesystemAssetManager assetManager("data");
     services.provideAssetManager(&assetManager);
 
-    Texture texture = Texture("level.png");
+    Texture texture("level.png");
+    Level level("level.png");
 
     SDL_Event event;
     bool running = true;
@@ -29,7 +31,7 @@ int main(int argc, char* argv[]) {
 
         renderer.clear();
 
-        renderer.drawTexture(texture, 0, 0, 1920, 1080);
+        renderer.drawTexture(level.texture(), 0, 0, 1920, 1080);
 
         renderer.flip();
     }
