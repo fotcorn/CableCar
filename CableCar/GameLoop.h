@@ -14,7 +14,7 @@ class GameLoop {
 
   private:
     // methods
-    void render();
+    void render(glm::vec2 mousePosition);
 
     // data
     std::unique_ptr<Renderer> renderer;

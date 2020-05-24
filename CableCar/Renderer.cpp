@@ -55,12 +55,18 @@ void Renderer::flip() {
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawTexture(const Texture& texture, int virtualX, int virtualY, int virtualWidth, int virtualHeight) {
+void Renderer::drawTexture(const Texture& texture, const Transform& transform) {
+    // transform.origin is in texture coordinates, so we have to scale it depending on render dimensions
+    float textureToDimensionRatioX = transform.dimensions.x / texture.width();
+    float textureToDimensionRatioY = transform.dimensions.y / texture.height();
+    float xPosition = transform.position.x - transform.origin.x * textureToDimensionRatioX;
+    float yPosition = transform.position.y - transform.origin.y * textureToDimensionRatioY;
+
     SDL_Rect destinationRect;
-    destinationRect.x = virtualX * viewportToVirtualX;
-    destinationRect.y = virtualY * viewportToVirtualY;
-    destinationRect.w = virtualWidth * viewportToVirtualX;
-    destinationRect.h = virtualHeight * viewportToVirtualY;
+    destinationRect.x = xPosition * viewportToVirtualX;
+    destinationRect.y = yPosition * viewportToVirtualY;
+    destinationRect.w = transform.dimensions.x * viewportToVirtualX;
+    destinationRect.h = transform.dimensions.y * viewportToVirtualY;
 
     SDL_RenderCopy(renderer, texture.m_texture, nullptr, &destinationRect);
 }

@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 
+#include "Components.h"
 #include "Texture.h"
 
 constexpr int VIRTUAL_WIDTH = 1920;
@@ -18,7 +19,7 @@ class Renderer {
     void clear();
     void flip();
 
-    void drawTexture(const Texture& texture, const int virtualX, const int virtualY, const int width, const int height);
+    void drawTexture(const Texture& texture, const Transform& transform);
 
   private:
     SDL_Renderer* renderer = nullptr;
