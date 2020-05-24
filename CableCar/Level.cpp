@@ -2,10 +2,27 @@
 
 #include <cassert>
 #include <entt/entt.hpp>
-#include <iostream>
 
 #include "Components.h"
 #include "Services.h"
+
+constexpr float ANCHOR_SIZE = 20.0f;
+constexpr float ANCHOR_RADIUS = ANCHOR_SIZE / 2;
+
+namespace {
+void createAnchor(entt::registry& reg,
+                  float x,
+                  float y,
+                  std::shared_ptr<Texture> texture,
+                  std::shared_ptr<Texture> hoverTexture) {
+    auto anchor = reg.create();
+    reg.emplace<Transform>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
+                           glm::vec2(texture->width() / 2, texture->height() / 2));
+    reg.emplace<Sprite>(anchor, texture);
+    reg.emplace<HoverTarget>(anchor, hoverTexture);
+    reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
+}
+}  // namespace
 
 Level::Level(const std::string& path) {
     SDL_Surface* surface = Services::assetManager().loadImage(path);
@@ -33,20 +50,11 @@ Level::Level(const std::string& path) {
             Uint32* pixel = pixels + y * surface->w + x;  // TODO: use pitch
             SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &a);
             if (r == 255 && g == 0 && b == 0) {
-                auto ropeAnchor = reg.create();
-                reg.emplace<Transform>(ropeAnchor, glm::vec2(x, y), glm::vec2(10.0f, 10.0f), glm::vec2(5.0f, 5.0f));
-                reg.emplace<Sprite>(ropeAnchor, ropeAnchorTex);
-                reg.emplace<HoverTarget>(ropeAnchor, ropeAnchorHoverTex);
-                reg.emplace<CollisionCircle>(ropeAnchor, glm::vec2(5.0f, 5.0f));
-
+                createAnchor(reg, x, y, ropeAnchorTex, ropeAnchorHoverTex);
                 *pixel = whitePixel;
             }
             if (r == 0 && g == 255 && b == 0) {
-                auto buildAnchor = reg.create();
-                reg.emplace<Transform>(buildAnchor, glm::vec2(x, y), glm::vec2(10.0f, 10.0f), glm::vec2(5.0f, 5.0f));
-                reg.emplace<Sprite>(buildAnchor, buildAnchorTex);
-                reg.emplace<HoverTarget>(buildAnchor, buildAnchorHoverTex);
-                reg.emplace<CollisionCircle>(buildAnchor, glm::vec2(5.0f, 5.0f));
+                createAnchor(reg, x, y, buildAnchorTex, buildAnchorHoverTex);
                 *pixel = whitePixel;
             }
         }
