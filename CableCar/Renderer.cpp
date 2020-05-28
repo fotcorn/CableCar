@@ -16,7 +16,7 @@ Renderer::Renderer(int screenWidth, int screenHeight) {
         throw std::runtime_error(std::string("Failed to create window: ") + SDL_GetError());
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr) {
         throw std::runtime_error(std::string("Failed to create renderer: ") + SDL_GetError());
     }
