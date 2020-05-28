@@ -11,6 +11,7 @@ struct Transform {
     glm::vec2 position;
     glm::vec2 dimensions;
     glm::vec2 origin;
+    int layer;
 };
 
 struct CollisionCircle {
@@ -33,3 +34,5 @@ struct Sprite {
 struct HoverTarget {
     std::shared_ptr<Texture> hoverTexture;
 };
+
+struct CurrentHover {};

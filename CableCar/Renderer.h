@@ -2,6 +2,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <entt/entt.hpp>
+
 #include "Components.h"
 #include "Texture.h"
 
@@ -16,12 +18,13 @@ class Renderer {
 
     SDL_Renderer* sdlRenderer() { return renderer; }
 
-    void clear();
-    void flip();
-
-    void drawTexture(const Texture& texture, const Transform& transform);
+    void render();
 
   private:
+    void clear();
+    void flip();
+    void drawTexture(const Texture& texture, const Transform& transform);
+
     SDL_Renderer* renderer = nullptr;
     SDL_Window* window = nullptr;
     int viewportWidth;

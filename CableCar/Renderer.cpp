@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "Services.h"
+
 Renderer::Renderer(int screenWidth, int screenHeight) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw std::runtime_error(std::string("Failed to initialize video: ") + SDL_GetError());
@@ -69,4 +71,34 @@ void Renderer::drawTexture(const Texture& texture, const Transform& transform) {
     destinationRect.h = transform.dimensions.y * viewportToVirtualY;
 
     SDL_RenderCopy(renderer, texture.m_texture, nullptr, &destinationRect);
+}
+
+void Renderer::render() {
+    entt::registry& reg = Services::registry();
+
+    clear();
+
+    float minDistance = std::numeric_limits<float>::max();
+
+    entt::entity hoverEntity = entt::null;
+    auto view = reg.view<CurrentHover>();
+    if (const auto it = view.begin(); it != view.end()) {
+        hoverEntity = *it;
+    }
+
+    reg.view<Sprite, Transform>().each([hoverEntity, this](auto entity, auto& sprite, auto& transform) {
+        if (hoverEntity == entity) {
+            return;
+        }
+        drawTexture(*sprite.texture.get(), transform);
+    });
+
+    if (reg.valid(hoverEntity)) {
+        auto [transform, hoverTarget] = reg.get<Transform, HoverTarget>(hoverEntity);
+        if (hoverTarget.hoverTexture) {
+            drawTexture(*hoverTarget.hoverTexture.get(), transform);
+        }
+    }
+
+    flip();
 }

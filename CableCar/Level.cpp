@@ -17,14 +17,14 @@ void createAnchor(entt::registry& reg,
                   std::shared_ptr<Texture> hoverTexture) {
     auto anchor = reg.create();
     reg.emplace<Transform>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
-                           glm::vec2(texture->width() / 2, texture->height() / 2));
+                           glm::vec2(texture->width() / 2, texture->height() / 2), 1);
     reg.emplace<Sprite>(anchor, texture);
     reg.emplace<HoverTarget>(anchor, hoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
 }
 }  // namespace
 
-Level::Level(const std::string& path) {
+void loadLevel(const std::string& path) {
     SDL_Surface* surface = Services::assetManager().loadImage(path);
 
     // levels should all be transparent pngs with 32bit depth and uniform row access
@@ -62,11 +62,11 @@ Level::Level(const std::string& path) {
 
     SDL_UnlockSurface(surface);
 
-    m_texture = std::make_unique<Texture>(surface);
+    std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
+
+    auto levelEntity = reg.create();
+    reg.emplace<Transform>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0), 0);
+    reg.emplace<Sprite>(levelEntity, levelTexture);
 
     SDL_FreeSurface(surface);
-}
-
-Texture& Level::texture() {
-    return *m_texture;
 }
