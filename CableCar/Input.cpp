@@ -15,10 +15,8 @@ void Input::handleInput() {
 
     entt::registry& reg = Services::registry();
 
-    auto view = reg.view<Transform, HoverTarget>();
+    auto view = reg.view<HoverTarget>();
     for (auto entity : view) {
-        auto [transform, hoverTarget] = view.get<Transform, HoverTarget>(entity);
-
         if (reg.has<CollisionCircle>(entity)) {
             auto& collision = reg.get<CollisionCircle>(entity);
             std::unique_ptr<float> distance = collision.collide(mousePosition);

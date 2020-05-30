@@ -7,3 +7,11 @@ set_property(TARGET CableCar PROPERTY CXX_STANDARD 17)
 
 target_link_libraries(CableCar ${CONAN_LIBS})
 target_include_directories(CableCar PRIVATE "external")
+
+
+if(MSVC)
+  target_compile_options(CableCar PRIVATE /W4)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER MATCHES "clang")
+  target_compile_options(CableCar PRIVATE -Wall -Wextra -pedantic)
+endif()

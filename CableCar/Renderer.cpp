@@ -75,8 +75,6 @@ void Renderer::render() {
 
     clear();
 
-    float minDistance = std::numeric_limits<float>::max();
-
     entt::entity hoverEntity = entt::null;
     auto view = reg.view<CurrentHover>();
     if (const auto it = view.begin(); it != view.end()) {
