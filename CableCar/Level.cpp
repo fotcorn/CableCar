@@ -9,6 +9,12 @@
 constexpr float ANCHOR_SIZE = 20.0f;
 constexpr float ANCHOR_RADIUS = ANCHOR_SIZE / 2;
 
+enum class Layer : unsigned int {
+    BACKGROUND = 100,
+    ANCHORS = 200,
+
+};
+
 namespace {
 void createAnchor(entt::registry& reg,
                   float x,
@@ -17,7 +23,7 @@ void createAnchor(entt::registry& reg,
                   std::shared_ptr<Texture> hoverTexture) {
     auto anchor = reg.create();
     reg.emplace<Transform>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
-                           glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), 1);
+                           glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), static_cast<unsigned int>(Layer::BACKGROUND));
     reg.emplace<Sprite>(anchor, texture);
     reg.emplace<HoverTarget>(anchor, hoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
@@ -65,7 +71,8 @@ void loadLevel(const std::string& path) {
     std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
 
     auto levelEntity = reg.create();
-    reg.emplace<Transform>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0), 0);
+    reg.emplace<Transform>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0),
+                           static_cast<unsigned int>(Layer::ANCHORS));
     reg.emplace<Sprite>(levelEntity, levelTexture);
 
     SDL_FreeSurface(surface);

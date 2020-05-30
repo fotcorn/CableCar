@@ -11,7 +11,7 @@ struct Transform {
     glm::vec2 position;
     glm::vec2 dimensions;
     glm::vec2 origin;
-    int layer;
+    unsigned int layer;
 };
 
 struct CollisionCircle {
