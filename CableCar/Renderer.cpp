@@ -58,11 +58,8 @@ void Renderer::flip() {
 }
 
 void Renderer::drawTexture(const Texture& texture, const Transform& transform) {
-    // transform.origin is in texture coordinates, so we have to scale it depending on render dimensions
-    float textureToDimensionRatioX = transform.dimensions.x / texture.width();
-    float textureToDimensionRatioY = transform.dimensions.y / texture.height();
-    float xPosition = transform.position.x - transform.origin.x * textureToDimensionRatioX;
-    float yPosition = transform.position.y - transform.origin.y * textureToDimensionRatioY;
+    float xPosition = transform.position.x - transform.origin.x;
+    float yPosition = transform.position.y - transform.origin.y;
 
     SDL_Rect destinationRect;
     destinationRect.x = xPosition * viewportToVirtualX;

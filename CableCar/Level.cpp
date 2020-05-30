@@ -17,7 +17,7 @@ void createAnchor(entt::registry& reg,
                   std::shared_ptr<Texture> hoverTexture) {
     auto anchor = reg.create();
     reg.emplace<Transform>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
-                           glm::vec2(texture->width() / 2, texture->height() / 2), 1);
+                           glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), 1);
     reg.emplace<Sprite>(anchor, texture);
     reg.emplace<HoverTarget>(anchor, hoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
