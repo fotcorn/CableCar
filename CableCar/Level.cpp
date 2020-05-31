@@ -15,7 +15,7 @@ enum class Layer : unsigned int {
 
 };
 
-void Level::createAnchor(const float x, const float y) {
+entt::entity Level::createAnchor(const float x, const float y) {
     entt::registry& reg = Services::registry();
     auto anchor = reg.create();
     reg.emplace<Sprite>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
@@ -23,6 +23,16 @@ void Level::createAnchor(const float x, const float y) {
                         anchorTexture);
     reg.emplace<HoverTarget>(anchor, anchorHoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
+    reg.emplace<Anchor>(anchor);
+    return anchor;
+}
+
+entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor) {
+    entt::registry& reg = Services::registry();
+    auto beam = reg.create();
+    // TODO: create Sprite
+    reg.emplace<Beam>(beam, startAnchor, endAnchor);
+    return beam;
 }
 
 Level::Level(const std::string& path) {

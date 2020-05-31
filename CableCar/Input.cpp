@@ -49,11 +49,12 @@ void Input::handleInput() {
     // mouse was pressed before
     if (mouseButtonDown && !(mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         if (reg.valid(dragStart)) {
-            if (!reg.valid(hoverEntity)) {
+            entt::entity dragEnd = hoverEntity;
+            if (!reg.valid(dragEnd)) {
                 // drag ended in the world, create new anchor
-                Services::level().createAnchor(x, y);
+                dragEnd = Services::level().createAnchor(x, y);
             }
-            // TODO: create metal strut
+            Services::level().createBeam(dragStart, dragEnd);
         }
         mouseButtonDown = false;
     }

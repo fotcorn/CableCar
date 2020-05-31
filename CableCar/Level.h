@@ -1,5 +1,6 @@
 #pragma once
 
+#include <entt/entt.hpp>
 #include <memory>
 #include <string>
 
@@ -8,7 +9,8 @@
 class Level {
   public:
     Level(const std::string& path);
-    void createAnchor(const float x, const float y);
+    entt::entity createAnchor(const float x, const float y);
+    entt::entity createBeam(entt::entity startAnchor, entt::entity endAnchor);
 
   private:
     std::shared_ptr<Texture> anchorTexture;

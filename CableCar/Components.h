@@ -33,3 +33,11 @@ struct HoverTarget {
 };
 
 struct CurrentHover {};
+
+// game elements
+struct Anchor {};
+
+struct Beam {
+    entt::entity start;
+    entt::entity end;
+};
