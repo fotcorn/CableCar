@@ -17,7 +17,8 @@ GameLoop::GameLoop() {
 
     Services::provideRegistry(&registry);
 
-    loadLevel("level.png");
+    level = std::make_unique<Level>("level.png");
+    Services::provideLevel(level.get());
 }
 
 void GameLoop::loop() {

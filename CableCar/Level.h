@@ -1,5 +1,16 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
-void loadLevel(const std::string& path);
+#include "Texture.h"
+
+class Level {
+  public:
+    Level(const std::string& path);
+    void createAnchor(const float x, const float y);
+
+  private:
+    std::shared_ptr<Texture> anchorTexture;
+    std::shared_ptr<Texture> anchorHoverTexture;
+};

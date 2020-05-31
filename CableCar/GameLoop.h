@@ -20,6 +20,7 @@ class GameLoop {
     // data
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AssetManager> assetManager;
+    std::unique_ptr<Level> level;
     entt::registry registry;
     Input input;
 };
