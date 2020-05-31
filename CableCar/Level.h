@@ -15,4 +15,5 @@ class Level {
   private:
     std::shared_ptr<Texture> anchorTexture;
     std::shared_ptr<Texture> anchorHoverTexture;
+    std::shared_ptr<Texture> beamTexture;
 };

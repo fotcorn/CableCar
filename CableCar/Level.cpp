@@ -1,7 +1,9 @@
 #include "Level.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <cassert>
 #include <entt/entt.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include "Components.h"
 #include "Services.h"
@@ -9,18 +11,25 @@
 constexpr float ANCHOR_SIZE = 20.0f;
 constexpr float ANCHOR_RADIUS = ANCHOR_SIZE / 2;
 
+constexpr float BEAM_WIDTH = 10.0f;
+
 enum class Layer : unsigned int {
     BACKGROUND = 100,
+    BEAMS = 150,
     ANCHORS = 200,
-
 };
 
 entt::entity Level::createAnchor(const float x, const float y) {
     entt::registry& reg = Services::registry();
     auto anchor = reg.create();
-    reg.emplace<Sprite>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
-                        glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), static_cast<unsigned int>(Layer::BACKGROUND),
-                        anchorTexture);
+
+    Sprite& sprite = reg.emplace<Sprite>(anchor);
+    sprite.position = glm::vec2(x, y);
+    sprite.dimensions = glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE);
+    sprite.origin = glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS);
+    sprite.layer = static_cast<unsigned int>(Layer::BACKGROUND);
+    sprite.texture = anchorTexture;
+
     reg.emplace<HoverTarget>(anchor, anchorHoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
     reg.emplace<Anchor>(anchor);
@@ -30,8 +39,25 @@ entt::entity Level::createAnchor(const float x, const float y) {
 entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor) {
     entt::registry& reg = Services::registry();
     auto beam = reg.create();
-    // TODO: create Sprite
     reg.emplace<Beam>(beam, startAnchor, endAnchor);
+
+    const Sprite& start = reg.get<Sprite>(startAnchor);
+    const Sprite& end = reg.get<Sprite>(endAnchor);
+
+    const float length = glm::distance(start.position, end.position);
+    const glm::vec2 center = (start.position + end.position) / 2.0f;
+
+    const glm::vec2 directionVector = glm::normalize(end.position - start.position);
+    const float angleDegree = 90 - glm::degrees(glm::atan(directionVector.x, directionVector.y));
+
+    Sprite& sprite = reg.emplace<Sprite>(beam);
+    sprite.position = center;
+    sprite.dimensions = glm::vec2(length, BEAM_WIDTH);
+    sprite.origin = glm::vec2(length / 2.0f, BEAM_WIDTH / 2.0f);
+    sprite.rotation = angleDegree;
+    sprite.layer = static_cast<unsigned int>(Layer::BEAMS);
+    sprite.texture = beamTexture;
+
     return beam;
 }
 
@@ -40,6 +66,7 @@ Level::Level(const std::string& path) {
 
     anchorTexture = std::make_shared<Texture>("rope_anchor.png");
     anchorHoverTexture = std::make_shared<Texture>("rope_anchor_hover.png");
+    beamTexture = std::make_shared<Texture>("pipe.png");
 
     SDL_Surface* surface = Services::assetManager().loadImage(path);
 
@@ -74,8 +101,12 @@ Level::Level(const std::string& path) {
     std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
 
     auto levelEntity = reg.create();
-    reg.emplace<Sprite>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0),
-                        static_cast<unsigned int>(Layer::ANCHORS), levelTexture);
+
+    Sprite& sprite = reg.emplace<Sprite>(levelEntity);
+    sprite.position = glm::vec2(0, 0);
+    sprite.dimensions = glm::vec2(1920, 1080);
+    sprite.layer = static_cast<unsigned int>(Layer::ANCHORS);
+    sprite.texture = levelTexture;
 
     SDL_FreeSurface(surface);
 }

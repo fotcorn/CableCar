@@ -8,16 +8,17 @@
 #include "Texture.h"
 
 struct Sprite {
-    glm::vec2 position;
-    glm::vec2 dimensions;
-    glm::vec2 origin;
-    unsigned int layer;
+    glm::vec2 position = glm::vec2(0.0f, 0.0f);
+    glm::vec2 dimensions = glm::vec2(0.0f, 0.0f);
+    glm::vec2 origin = glm::vec2(0.0f, 0.0f);
+    float rotation = 0.0f;
+    unsigned int layer = 0;
     std::shared_ptr<Texture> texture;
 };
 
 struct CollisionCircle {
-    glm::vec2 center;
-    float radius;
+    glm::vec2 center = glm::vec2(0.0f, 0.0f);
+    float radius = 0.0f;
     std::unique_ptr<float> collide(glm::vec2 coords) {
         std::unique_ptr<float> ret;
         float distance = glm::distance(center, coords);

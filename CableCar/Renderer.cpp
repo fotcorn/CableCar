@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include <cmath>
 #include <stdexcept>
 #include <string>
 
@@ -67,7 +68,10 @@ void Renderer::drawTexture(const Sprite& sprite, const Texture& overrideTexture)
     destinationRect.w = sprite.dimensions.x * viewportToVirtualX;
     destinationRect.h = sprite.dimensions.y * viewportToVirtualY;
 
-    SDL_RenderCopy(renderer, overrideTexture.m_texture, nullptr, &destinationRect);
+    SDL_Point center{static_cast<int>(std::lroundf(sprite.origin.x)), static_cast<int>(std::lroundf(sprite.origin.y))};
+
+    SDL_RenderCopyEx(renderer, overrideTexture.m_texture, nullptr, &destinationRect, sprite.rotation, &center,
+                     SDL_FLIP_NONE);
 }
 
 void Renderer::drawTexture(const Sprite& sprite) {
