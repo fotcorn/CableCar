@@ -7,11 +7,12 @@
 
 #include "Texture.h"
 
-struct Transform {
+struct Sprite {
     glm::vec2 position;
     glm::vec2 dimensions;
     glm::vec2 origin;
     unsigned int layer;
+    std::shared_ptr<Texture> texture;
 };
 
 struct CollisionCircle {
@@ -25,10 +26,6 @@ struct CollisionCircle {
         }
         return ret;
     }
-};
-
-struct Sprite {
-    std::shared_ptr<Texture> texture;
 };
 
 struct HoverTarget {

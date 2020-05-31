@@ -19,6 +19,8 @@ GameLoop::GameLoop() {
 
     level = std::make_unique<Level>("level.png");
     Services::provideLevel(level.get());
+
+    input = std::make_unique<Input>();
 }
 
 void GameLoop::loop() {
@@ -33,7 +35,7 @@ void GameLoop::loop() {
             }
         }
 
-        input.handleInput();
+        input->handleInput();
         renderer->render();
     }
 }

@@ -23,7 +23,8 @@ class Renderer {
   private:
     void clear();
     void flip();
-    void drawTexture(const Texture& texture, const Transform& transform);
+    void drawTexture(const Sprite& sprite);
+    void drawTexture(const Sprite& sprite, const Texture& overrideTexture);
 
     SDL_Renderer* renderer = nullptr;
     SDL_Window* window = nullptr;

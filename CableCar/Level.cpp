@@ -18,9 +18,9 @@ enum class Layer : unsigned int {
 void Level::createAnchor(const float x, const float y) {
     entt::registry& reg = Services::registry();
     auto anchor = reg.create();
-    reg.emplace<Transform>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
-                           glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), static_cast<unsigned int>(Layer::BACKGROUND));
-    reg.emplace<Sprite>(anchor, anchorTexture);
+    reg.emplace<Sprite>(anchor, glm::vec2(x, y), glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE),
+                        glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS), static_cast<unsigned int>(Layer::BACKGROUND),
+                        anchorTexture);
     reg.emplace<HoverTarget>(anchor, anchorHoverTexture);
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
 }
@@ -64,9 +64,8 @@ Level::Level(const std::string& path) {
     std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
 
     auto levelEntity = reg.create();
-    reg.emplace<Transform>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0),
-                           static_cast<unsigned int>(Layer::ANCHORS));
-    reg.emplace<Sprite>(levelEntity, levelTexture);
+    reg.emplace<Sprite>(levelEntity, glm::vec2(0, 0), glm::vec2(1920, 1080), glm::vec2(0),
+                        static_cast<unsigned int>(Layer::ANCHORS), levelTexture);
 
     SDL_FreeSurface(surface);
 }

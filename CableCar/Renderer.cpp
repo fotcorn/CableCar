@@ -57,17 +57,21 @@ void Renderer::flip() {
     SDL_RenderPresent(renderer);
 }
 
-void Renderer::drawTexture(const Texture& texture, const Transform& transform) {
-    float xPosition = transform.position.x - transform.origin.x;
-    float yPosition = transform.position.y - transform.origin.y;
+void Renderer::drawTexture(const Sprite& sprite, const Texture& overrideTexture) {
+    float xPosition = sprite.position.x - sprite.origin.x;
+    float yPosition = sprite.position.y - sprite.origin.y;
 
     SDL_Rect destinationRect;
     destinationRect.x = xPosition * viewportToVirtualX;
     destinationRect.y = yPosition * viewportToVirtualY;
-    destinationRect.w = transform.dimensions.x * viewportToVirtualX;
-    destinationRect.h = transform.dimensions.y * viewportToVirtualY;
+    destinationRect.w = sprite.dimensions.x * viewportToVirtualX;
+    destinationRect.h = sprite.dimensions.y * viewportToVirtualY;
 
-    SDL_RenderCopy(renderer, texture.m_texture, nullptr, &destinationRect);
+    SDL_RenderCopy(renderer, overrideTexture.m_texture, nullptr, &destinationRect);
+}
+
+void Renderer::drawTexture(const Sprite& sprite) {
+    drawTexture(sprite, *sprite.texture.get());
 }
 
 void Renderer::render() {
@@ -81,18 +85,21 @@ void Renderer::render() {
         hoverEntity = *it;
     }
 
-    reg.view<Sprite, Transform>().each([hoverEntity, this](auto entity, auto& sprite, auto& transform) {
+    // sort sprites by layer for correct rendering (painter algorithm)
+    // we insert only a small number of new entities per frame, so insertation sort should be faster
+    // than other algorithms.
+    reg.sort<Sprite>([](const auto& lhs, const auto& rhs) { return lhs.layer > rhs.layer; }, entt::insertion_sort{});
+
+    reg.view<Sprite>().each([hoverEntity, this](auto entity, auto& sprite) {
         if (hoverEntity == entity) {
-            return;
+            return;  // render hoverEntity last
         }
-        drawTexture(*sprite.texture.get(), transform);
+        drawTexture(sprite);
     });
 
     if (reg.valid(hoverEntity)) {
-        auto [transform, hoverTarget] = reg.get<Transform, HoverTarget>(hoverEntity);
-        if (hoverTarget.hoverTexture) {
-            drawTexture(*hoverTarget.hoverTexture.get(), transform);
-        }
+        auto [sprite, hoverTarget] = reg.get<Sprite, HoverTarget>(hoverEntity);
+        drawTexture(sprite, *hoverTarget.hoverTexture.get());
     }
 
     flip();
