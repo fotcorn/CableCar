@@ -23,8 +23,4 @@ class GameLoop {
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<Level> level;
     std::unique_ptr<Input> input;
-    entt::registry buildRegistry;
-    entt::registry simulationRegistry;
-
-    bool buildMode;
 };

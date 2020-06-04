@@ -7,19 +7,19 @@
 #include "Components.h"
 #include "FilesystemAssetManager.h"
 
-GameLoop::GameLoop() : buildMode(true) {
+GameLoop::GameLoop() {
     assetManager = std::make_unique<FilesystemAssetManager>("data");
     Services::provideAssetManager(assetManager.get());
 
     renderer = std::make_unique<Renderer>(1920, 1080);
     Services::provideRenderer(renderer.get());
 
-    Services::provideRegistry(&buildRegistry);
-
-    level = std::make_unique<Level>("level.png");
+    level = std::make_unique<Level>();
     Services::provideLevel(level.get());
 
     input = std::make_unique<Input>();
+
+    level->loadLevel("level.png");
 }
 
 void GameLoop::loop() {

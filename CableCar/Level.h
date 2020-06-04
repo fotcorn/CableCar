@@ -8,7 +8,7 @@
 
 class Level {
   public:
-    Level(const std::string& path);
+    void loadLevel(const std::string& path);
     entt::entity createAnchor(const float x, const float y);
     entt::entity createBeam(entt::entity startAnchor, entt::entity endAnchor);
 
@@ -16,4 +16,8 @@ class Level {
     std::shared_ptr<Texture> anchorTexture;
     std::shared_ptr<Texture> anchorHoverTexture;
     std::shared_ptr<Texture> beamTexture;
+
+    entt::registry buildRegistry;
+    entt::registry simulationRegistry;
+    bool buildMode = true;
 };

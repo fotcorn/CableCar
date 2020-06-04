@@ -20,29 +20,27 @@ enum class Layer : unsigned int {
 };
 
 entt::entity Level::createAnchor(const float x, const float y) {
-    entt::registry& reg = Services::registry();
-    auto anchor = reg.create();
+    auto anchor = buildRegistry.create();
 
-    Sprite& sprite = reg.emplace<Sprite>(anchor);
+    Sprite& sprite = buildRegistry.emplace<Sprite>(anchor);
     sprite.position = glm::vec2(x, y);
     sprite.dimensions = glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE);
     sprite.origin = glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS);
     sprite.layer = static_cast<unsigned int>(Layer::BACKGROUND);
     sprite.texture = anchorTexture;
 
-    reg.emplace<HoverTarget>(anchor, anchorHoverTexture);
-    reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
-    reg.emplace<Anchor>(anchor);
+    buildRegistry.emplace<HoverTarget>(anchor, anchorHoverTexture);
+    buildRegistry.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
+    buildRegistry.emplace<Anchor>(anchor);
     return anchor;
 }
 
 entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor) {
-    entt::registry& reg = Services::registry();
-    auto beam = reg.create();
-    reg.emplace<Beam>(beam, startAnchor, endAnchor);
+    auto beam = buildRegistry.create();
+    buildRegistry.emplace<Beam>(beam, startAnchor, endAnchor);
 
-    const Sprite& start = reg.get<Sprite>(startAnchor);
-    const Sprite& end = reg.get<Sprite>(endAnchor);
+    const Sprite& start = buildRegistry.get<Sprite>(startAnchor);
+    const Sprite& end = buildRegistry.get<Sprite>(endAnchor);
 
     const float length = glm::distance(start.position, end.position);
     const glm::vec2 center = (start.position + end.position) / 2.0f;
@@ -50,7 +48,7 @@ entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor)
     const glm::vec2 directionVector = glm::normalize(end.position - start.position);
     const float angleDegree = 90 - glm::degrees(glm::atan(directionVector.x, directionVector.y));
 
-    Sprite& sprite = reg.emplace<Sprite>(beam);
+    Sprite& sprite = buildRegistry.emplace<Sprite>(beam);
     sprite.position = center;
     sprite.dimensions = glm::vec2(length, BEAM_WIDTH);
     sprite.origin = glm::vec2(length / 2.0f, BEAM_WIDTH / 2.0f);
@@ -61,8 +59,11 @@ entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor)
     return beam;
 }
 
-Level::Level(const std::string& path) {
-    entt::registry& reg = Services::registry();
+void Level::loadLevel(const std::string& path) {
+    buildMode = true;
+    buildRegistry.clear();
+    simulationRegistry.clear();
+    Services::provideRegistry(&buildRegistry);
 
     anchorTexture = std::make_shared<Texture>("rope_anchor.png");
     anchorHoverTexture = std::make_shared<Texture>("rope_anchor_hover.png");
@@ -100,9 +101,9 @@ Level::Level(const std::string& path) {
 
     std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
 
-    auto levelEntity = reg.create();
+    auto levelEntity = buildRegistry.create();
 
-    Sprite& sprite = reg.emplace<Sprite>(levelEntity);
+    Sprite& sprite = buildRegistry.emplace<Sprite>(levelEntity);
     sprite.position = glm::vec2(0, 0);
     sprite.dimensions = glm::vec2(1920, 1080);
     sprite.layer = static_cast<unsigned int>(Layer::ANCHORS);
