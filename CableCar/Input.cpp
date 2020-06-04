@@ -1,15 +1,27 @@
 #include "Input.h"
 
-#include <SDL2/SDL.h>
+#include <iostream>
 
 #include "Components.h"
 #include "Services.h"
 
-Input::Input() {
-    std::shared_ptr<Texture> pipeTexture = std::make_shared<Texture>("pipe.png");
+bool Input::handleInput() {
+    entt::entity hoverEntity = handleMouse();
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+                return false;
+            case SDL_KEYUP:
+                handleKeyEvent(event, hoverEntity);
+                break;
+        }
+    }
+    return true;
 }
 
-void Input::handleInput() {
+entt::entity Input::handleMouse() {
     int x, y;
     Uint32 mouseState = SDL_GetMouseState(&x, &y);
     glm::vec2 mousePosition(x, y);
@@ -57,5 +69,25 @@ void Input::handleInput() {
             Services::level().createBeam(dragStart, dragEnd);
         }
         mouseButtonDown = false;
+    }
+
+    return hoverEntity;
+}
+
+void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
+    SDL_Keycode key = event.key.keysym.sym;
+    Uint16 mod = event.key.keysym.mod;
+
+    bool noModKeys = !((KMOD_CTRL | KMOD_SHIFT | KMOD_ALT | KMOD_GUI) & mod);
+    bool ctrlOnly = !((KMOD_SHIFT | KMOD_ALT | KMOD_GUI) & mod) && (mod & KMOD_CTRL);
+
+    if (key == SDLK_s && ctrlOnly) {
+        std::cout << "s" << std::endl;
+    }
+    if (key == SDLK_r && ctrlOnly) {
+        std::cout << "r" << std::endl;
+    }
+    if (key == SDLK_DELETE && noModKeys) {
+        std::cout << "delete " << std::endl;
     }
 }

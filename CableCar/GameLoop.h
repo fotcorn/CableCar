@@ -16,11 +16,15 @@ class GameLoop {
   private:
     // methods
     void render(glm::vec2 mousePosition);
+    void handleKeyEvent(SDL_Event event);
 
     // data
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<Level> level;
     std::unique_ptr<Input> input;
-    entt::registry registry;
+    entt::registry buildRegistry;
+    entt::registry simulationRegistry;
+
+    bool buildMode;
 };
