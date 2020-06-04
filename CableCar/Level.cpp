@@ -111,3 +111,20 @@ void Level::loadLevel(const std::string& path) {
 
     SDL_FreeSurface(surface);
 }
+
+Level::GameMode Level::gameMode() {
+    return buildMode ? GameMode::BUILD_MODE : GameMode::SIMULATION_MODE;
+}
+
+void Level::setGameMode(GameMode newMode) {
+    if (buildMode && newMode == GameMode::SIMULATION_MODE) {
+        simulationRegistry.clear();
+        // TODO: copy entities from build registry to simulation registry
+        Services::provideRegistry(&simulationRegistry);
+        buildMode = false;
+    } else if (!buildMode && newMode == GameMode::BUILD_MODE) {
+        simulationRegistry.clear();
+        Services::provideRegistry(&buildRegistry);
+        buildMode = true;
+    }
+}

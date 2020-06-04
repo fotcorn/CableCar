@@ -12,6 +12,14 @@ class Level {
     entt::entity createAnchor(const float x, const float y);
     entt::entity createBeam(entt::entity startAnchor, entt::entity endAnchor);
 
+    enum GameMode {
+        BUILD_MODE,
+        SIMULATION_MODE,
+    };
+
+    GameMode gameMode();
+    void setGameMode(GameMode mode);
+
   private:
     std::shared_ptr<Texture> anchorTexture;
     std::shared_ptr<Texture> anchorHoverTexture;

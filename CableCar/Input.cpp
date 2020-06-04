@@ -83,11 +83,17 @@ void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
 
     if (key == SDLK_s && ctrlOnly) {
         std::cout << "s" << std::endl;
-    }
-    if (key == SDLK_r && ctrlOnly) {
-        std::cout << "r" << std::endl;
-    }
-    if (key == SDLK_DELETE && noModKeys) {
+    } else if (key == SDLK_r && ctrlOnly) {
+        if (Services::level().gameMode() == Level::BUILD_MODE) {
+            Services::level().setGameMode(Level::SIMULATION_MODE);
+        } else {
+            Services::level().setGameMode(Level::BUILD_MODE);
+        }
+    } else if (key == SDLK_ESCAPE && noModKeys) {
+        if (Services::level().gameMode() == Level::SIMULATION_MODE) {
+            Services::level().setGameMode(Level::BUILD_MODE);
+        }
+    } else if (key == SDLK_DELETE && noModKeys) {
         std::cout << "delete " << std::endl;
     }
 }
