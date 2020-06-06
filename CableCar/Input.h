@@ -18,5 +18,6 @@ class Input {
 
     // data
     entt::entity dragStart = entt::null;
+    entt::entity tempDragBeam = entt::null;
     bool mouseButtonDown = false;
 };

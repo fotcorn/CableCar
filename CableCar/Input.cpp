@@ -53,20 +53,35 @@ entt::entity Input::handleMouse() {
     if (!mouseButtonDown && mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         if (reg.valid(hoverEntity)) {
             dragStart = hoverEntity;
+
+            tempDragBeam = reg.create();
+            // we do not actually add a Beam component to the temporary entity,
+            // a temporary beam is not really part of a level
+            const Sprite& start = reg.get<Sprite>(dragStart);
+            Services::level().initBeamSprite(tempDragBeam, start.position, mousePosition);
         } else {
             dragStart = entt::null;
         }
         mouseButtonDown = true;
     }
-    // mouse was pressed before
-    if (mouseButtonDown && !(mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+    // mouse was pressed before and is still pressed
+    else if (mouseButtonDown && mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        const Sprite& start = reg.get<Sprite>(dragStart);
+        Services::level().updateBeamSprite(tempDragBeam, start.position, mousePosition);
+    }
+    // mouse was pressed before and is now released
+    else if (mouseButtonDown && !(mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         if (reg.valid(dragStart)) {
             entt::entity dragEnd = hoverEntity;
             if (!reg.valid(dragEnd)) {
                 // drag ended in the world, create new anchor
                 dragEnd = Services::level().createAnchor(x, y);
             }
+            // create actual beam
             Services::level().createBeam(dragStart, dragEnd);
+
+            // destroy temporary beam
+            reg.destroy(tempDragBeam);
         }
         mouseButtonDown = false;
     }

@@ -5,7 +5,6 @@
 #include <entt/entt.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#include "Components.h"
 #include "Services.h"
 
 constexpr float ANCHOR_SIZE = 20.0f;
@@ -34,27 +33,39 @@ entt::entity Level::createAnchor(const float x, const float y) {
     buildRegistry.emplace<Anchor>(anchor);
     return anchor;
 }
+void Level::updateBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+    Sprite& sprite = buildRegistry.get<Sprite>(beam);
+    updateBeamSprite(sprite, startPosition, endPosition);
+}
 
-entt::entity Level::createBeam(entt::entity startAnchor, entt::entity endAnchor) {
+void Level::updateBeamSprite(Sprite& sprite, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+    const float length = glm::distance(startPosition, endPosition);
+    const glm::vec2 center = (startPosition + endPosition) / 2.0f;
+
+    const glm::vec2 directionVector = glm::normalize(endPosition - startPosition);
+    const float angleDegree = 90 - glm::degrees(glm::atan(directionVector.x, directionVector.y));
+
+    sprite.position = center;
+    sprite.dimensions = glm::vec2(length, BEAM_WIDTH);
+    sprite.origin = glm::vec2(length / 2.0f, BEAM_WIDTH / 2.0f);
+    sprite.rotation = angleDegree;
+}
+
+void Level::initBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+    Sprite& sprite = buildRegistry.emplace<Sprite>(beam);
+    sprite.layer = static_cast<unsigned int>(Layer::BEAMS);
+    sprite.texture = beamTexture;
+    updateBeamSprite(sprite, startPosition, endPosition);
+}
+
+entt::entity Level::createBeam(const entt::entity startAnchor, const entt::entity endAnchor) {
     auto beam = buildRegistry.create();
     buildRegistry.emplace<Beam>(beam, startAnchor, endAnchor);
 
     const Sprite& start = buildRegistry.get<Sprite>(startAnchor);
     const Sprite& end = buildRegistry.get<Sprite>(endAnchor);
 
-    const float length = glm::distance(start.position, end.position);
-    const glm::vec2 center = (start.position + end.position) / 2.0f;
-
-    const glm::vec2 directionVector = glm::normalize(end.position - start.position);
-    const float angleDegree = 90 - glm::degrees(glm::atan(directionVector.x, directionVector.y));
-
-    Sprite& sprite = buildRegistry.emplace<Sprite>(beam);
-    sprite.position = center;
-    sprite.dimensions = glm::vec2(length, BEAM_WIDTH);
-    sprite.origin = glm::vec2(length / 2.0f, BEAM_WIDTH / 2.0f);
-    sprite.rotation = angleDegree;
-    sprite.layer = static_cast<unsigned int>(Layer::BEAMS);
-    sprite.texture = beamTexture;
+    initBeamSprite(beam, start.position, end.position);
 
     return beam;
 }
