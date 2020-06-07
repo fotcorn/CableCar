@@ -10,7 +10,7 @@
 constexpr float ANCHOR_SIZE = 20.0f;
 constexpr float ANCHOR_RADIUS = ANCHOR_SIZE / 2;
 
-constexpr float BEAM_WIDTH = 10.0f;
+constexpr float BEAM_WIDTH = 7.0f;
 
 enum class Layer : unsigned int {
     BACKGROUND = 100,
