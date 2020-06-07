@@ -10,9 +10,11 @@
 class Level {
   public:
     void loadLevel(const std::string& path);
-    entt::entity createAnchor(const float x, const float y);
-    entt::entity createBeam(const entt::entity startAnchor, const entt::entity endAnchor);
 
+    entt::entity createAnchor(const float x, const float y, const bool levelAnchor = false);
+    void removeAnchor(entt::entity anchor);
+
+    entt::entity createBeam(const entt::entity startAnchor, const entt::entity endAnchor);
     void updateBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition);
     void updateBeamSprite(Sprite& sprite, const glm::vec2 startPosition, const glm::vec2 endPosition);
     void initBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition);

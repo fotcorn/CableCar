@@ -18,7 +18,7 @@ enum class Layer : unsigned int {
     ANCHORS = 200,
 };
 
-entt::entity Level::createAnchor(const float x, const float y) {
+entt::entity Level::createAnchor(const float x, const float y, const bool levelAnchor) {
     auto anchor = buildRegistry.create();
 
     Sprite& sprite = buildRegistry.emplace<Sprite>(anchor);
@@ -30,9 +30,26 @@ entt::entity Level::createAnchor(const float x, const float y) {
 
     buildRegistry.emplace<HoverTarget>(anchor, anchorHoverTexture);
     buildRegistry.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
-    buildRegistry.emplace<Anchor>(anchor);
+    buildRegistry.emplace<Anchor>(anchor, levelAnchor);
     return anchor;
 }
+
+void Level::removeAnchor(entt::entity anchor) {
+    Anchor& anchorComponent = buildRegistry.get<Anchor>(anchor);
+    if (anchorComponent.levelAnchor) {
+        // anchors loaded from the level cannot be deleted
+        return;
+    }
+
+    buildRegistry.view<Beam>().each([this, anchor](auto entity, Beam& beam) {
+        if (beam.start == anchor || beam.end == anchor) {
+            buildRegistry.destroy(entity);
+        }
+    });
+
+    buildRegistry.destroy(anchor);
+}
+
 void Level::updateBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
     Sprite& sprite = buildRegistry.get<Sprite>(beam);
     updateBeamSprite(sprite, startPosition, endPosition);
@@ -98,11 +115,11 @@ void Level::loadLevel(const std::string& path) {
             Uint32* pixel = pixels + y * surface->w + x;  // TODO: use pitch
             SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &a);
             if (r == 255 && g == 0 && b == 0) {
-                createAnchor(x, y);
+                createAnchor(x, y, true);
                 *pixel = whitePixel;
             }
             if (r == 0 && g == 255 && b == 0) {
-                createAnchor(x, y);
+                createAnchor(x, y, true);
                 *pixel = whitePixel;
             }
         }

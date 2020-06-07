@@ -111,6 +111,8 @@ void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
             Services::level().setGameMode(Level::BUILD_MODE);
         }
     } else if (key == SDLK_DELETE && noModKeys) {
-        std::cout << "delete " << std::endl;
+        if (Services::registry().valid(hoverEntity)) {
+            Services::level().removeAnchor(hoverEntity);
+        }
     }
 }

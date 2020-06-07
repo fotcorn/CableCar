@@ -36,7 +36,12 @@ struct HoverTarget {
 struct CurrentHover {};
 
 // game elements
-struct Anchor {};
+struct Anchor {
+    // anchor is part of the level and not placed by the player
+    // * will not be saved into a savegame
+    // * does not get removed when last beam connected to it is removed
+    bool levelAnchor;
+};
 
 struct Beam {
     entt::entity start;
