@@ -66,8 +66,10 @@ entt::entity Input::handleMouse() {
     }
     // mouse was pressed before and is still pressed
     else if (mouseButtonDown && mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        const Sprite& start = reg.get<Sprite>(dragStart);
-        Services::level().updateBeamSprite(tempDragBeam, start.position, mousePosition);
+        if (reg.valid(dragStart)) {
+            const Sprite& start = reg.get<Sprite>(dragStart);
+            Services::level().updateBeamSprite(tempDragBeam, start.position, mousePosition);
+        }
     }
     // mouse was pressed before and is now released
     else if (mouseButtonDown && !(mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))) {
