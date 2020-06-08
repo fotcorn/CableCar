@@ -93,9 +93,9 @@ void Level::loadLevel(const std::string& path) {
     simulationRegistry.clear();
     Services::provideRegistry(&buildRegistry);
 
-    anchorTexture = std::make_shared<Texture>("rope_anchor.png");
-    anchorHoverTexture = std::make_shared<Texture>("rope_anchor_hover.png");
-    beamTexture = std::make_shared<Texture>("pipe.png");
+    anchorTexture = Texture::load("rope_anchor.png");
+    anchorHoverTexture = Texture::load("rope_anchor_hover.png");
+    beamTexture = Texture::load("pipe.png");
 
     SDL_Surface* surface = Services::assetManager().loadImage(path);
 
@@ -127,15 +127,13 @@ void Level::loadLevel(const std::string& path) {
 
     SDL_UnlockSurface(surface);
 
-    std::shared_ptr<Texture> levelTexture = std::make_shared<Texture>(surface);
-
     auto levelEntity = buildRegistry.create();
 
     Sprite& sprite = buildRegistry.emplace<Sprite>(levelEntity);
     sprite.position = glm::vec2(0, 0);
     sprite.dimensions = glm::vec2(1920, 1080);
     sprite.layer = static_cast<unsigned int>(Layer::ANCHORS);
-    sprite.texture = levelTexture;
+    sprite.texture = Texture::load(path);
 
     SDL_FreeSurface(surface);
 }
