@@ -35,4 +35,6 @@ class Level {
     entt::registry buildRegistry;
     entt::registry simulationRegistry;
     bool buildMode = true;
+
+    entt::entity levelEntity;
 };

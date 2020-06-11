@@ -127,7 +127,7 @@ void Level::loadLevel(const std::string& path) {
 
     SDL_UnlockSurface(surface);
 
-    auto levelEntity = buildRegistry.create();
+    levelEntity = buildRegistry.create();
 
     Sprite& sprite = buildRegistry.emplace<Sprite>(levelEntity);
     sprite.position = glm::vec2(0, 0);
@@ -146,6 +146,18 @@ void Level::setGameMode(GameMode newMode) {
     if (buildMode && newMode == GameMode::SIMULATION_MODE) {
         simulationRegistry.clear();
         // TODO: copy entities from build registry to simulation registry
+
+        entt::entity simulationLevelEntity = simulationRegistry.create();
+        simulationRegistry.emplace<Sprite>(simulationLevelEntity, buildRegistry.get<Sprite>(levelEntity));
+
+        buildRegistry.view<Anchor, Sprite>().each([this](auto entity, Anchor& anchor, Sprite& sprite) {
+            std::ignore = entity;
+            entt::entity simulationEntity = simulationRegistry.create();
+            simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
+            simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
+        });
+
+
         Services::provideRegistry(&simulationRegistry);
         buildMode = false;
     } else if (!buildMode && newMode == GameMode::BUILD_MODE) {
