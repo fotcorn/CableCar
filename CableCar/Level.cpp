@@ -35,19 +35,15 @@ entt::entity load(entt::registry& reg, const std::string& path) {
     uint8_t r, g, b, a;
     Uint32* pixels = (Uint32*)surface->pixels;
 
-    Uint32 whitePixel = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
-
     for (int y = 0; y < surface->h; y++) {
         for (int x = 0; x < surface->w; x++) {
             Uint32* pixel = pixels + y * surface->w + x;  // TODO: use pitch
             SDL_GetRGBA(*pixel, surface->format, &r, &g, &b, &a);
             if (r == 255 && g == 0 && b == 0) {
                 createAnchor(reg, x, y, true);
-                *pixel = whitePixel;
             }
             if (r == 0 && g == 255 && b == 0) {
                 createAnchor(reg, x, y, true);
-                *pixel = whitePixel;
             }
         }
     }
