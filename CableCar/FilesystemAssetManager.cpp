@@ -1,8 +1,11 @@
 #include "FilesystemAssetManager.h"
 
+#include "Services.h"
+
 namespace fs = ghc::filesystem;
 
-FilesystemAssetManager::FilesystemAssetManager(std::string directory) {
+FilesystemAssetManager::FilesystemAssetManager(std::string directory, SDL_Renderer* sdlRenderer)
+    : sdlRenderer(sdlRenderer) {
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         throw std::runtime_error("Failed to initialize SDL_image with png support");
     }
@@ -25,7 +28,7 @@ FilesystemAssetManager::FilesystemAssetManager(std::string directory) {
     }
 }
 
-SDL_Surface* FilesystemAssetManager::loadImage(std::string name) {
+std::shared_ptr<SDL_Surface> FilesystemAssetManager::loadImage(std::string name) {
     fs::path fsPath = dataPath / name;
     if (!fs::exists(fsPath)) {
         throw std::runtime_error(std::string("Failed to find image file: ") + fsPath.string());
@@ -35,5 +38,18 @@ SDL_Surface* FilesystemAssetManager::loadImage(std::string name) {
     if (surface == nullptr) {
         throw std::runtime_error(std::string("Failed to load image:") + std::string(IMG_GetError()));
     }
-    return surface;
+    return std::shared_ptr<SDL_Surface>(surface, SDL_FreeSurface);
+}
+
+std::shared_ptr<Texture> FilesystemAssetManager::loadTexture(std::string name) {
+    std::shared_ptr<SDL_Surface> surface = Services::assetManager().loadImage(name);
+
+    int width = surface->w;
+    int height = surface->h;
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(sdlRenderer, surface.get());
+    if (texture == nullptr) {
+        throw std::runtime_error(std::string("Failed to convert loaded image to texture: ") +
+                                 std::string(SDL_GetError()));
+    }
+    return std::make_shared<Texture>(texture, width, height);
 }

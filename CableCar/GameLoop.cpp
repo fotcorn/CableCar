@@ -4,15 +4,16 @@
 
 #include <entt/entt.hpp>
 
+#include "CachingAssetManager.h"
 #include "Components.h"
 #include "FilesystemAssetManager.h"
 
 GameLoop::GameLoop() {
-    assetManager = std::make_unique<FilesystemAssetManager>("data");
-    Services::provideAssetManager(assetManager.get());
-
     renderer = std::make_unique<Renderer>(1920, 1080);
-    Services::provideRenderer(renderer.get());
+
+    assetManager = std::make_unique<CachingAssetManager>(
+        std::make_unique<FilesystemAssetManager>("data", renderer->sdlRenderer()));
+    Services::provideAssetManager(assetManager.get());
 
     game = std::make_unique<Game>();
     Services::provideGame(game.get());

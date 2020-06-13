@@ -93,17 +93,17 @@ void Game::loadLevel(const std::string& path) {
     simulationRegistry.clear();
     Services::provideRegistry(&buildRegistry);
 
-    anchorTexture = Texture::load("rope_anchor.png");
-    anchorHoverTexture = Texture::load("rope_anchor_hover.png");
-    beamTexture = Texture::load("pipe.png");
+    anchorTexture = Services::assetManager().loadTexture("rope_anchor.png");
+    anchorHoverTexture = Services::assetManager().loadTexture("rope_anchor_hover.png");
+    beamTexture = Services::assetManager().loadTexture("pipe.png");
 
-    SDL_Surface* surface = Services::assetManager().loadImage(path);
+    std::shared_ptr<SDL_Surface> surface = Services::assetManager().loadImage(path);
 
     // levels should all be transparent pngs with 32bit depth and uniform row access
     assert(surface->format->BytesPerPixel == 4);
     assert(surface->pitch == surface->w * 4);
 
-    SDL_LockSurface(surface);
+    SDL_LockSurface(surface.get());
 
     uint8_t r, g, b, a;
     Uint32* pixels = (Uint32*)surface->pixels;
@@ -125,7 +125,7 @@ void Game::loadLevel(const std::string& path) {
         }
     }
 
-    SDL_UnlockSurface(surface);
+    SDL_UnlockSurface(surface.get());
 
     levelEntity = buildRegistry.create();
 
@@ -133,9 +133,7 @@ void Game::loadLevel(const std::string& path) {
     sprite.position = glm::vec2(0, 0);
     sprite.dimensions = glm::vec2(1920, 1080);
     sprite.layer = static_cast<unsigned int>(Layer::ANCHORS);
-    sprite.texture = Texture::load(path);
-
-    SDL_FreeSurface(surface);
+    sprite.texture = Services::assetManager().loadTexture(path);
 }
 
 Game::GameMode Game::gameMode() {

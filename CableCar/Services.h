@@ -13,10 +13,6 @@ class Services {
         assert(_assetManager != nullptr);
         return *_assetManager;
     }
-    static Renderer& renderer() {
-        assert(_renderer != nullptr);
-        return *_renderer;
-    }
     static entt::registry& registry() {
         assert(_registry != nullptr);
         return *_registry;
@@ -26,13 +22,11 @@ class Services {
         return *_game;
     }
     static void provideAssetManager(AssetManager* assetManager) { _assetManager = assetManager; }
-    static void provideRenderer(Renderer* renderer) { _renderer = renderer; }
     static void provideRegistry(entt::registry* registry) { _registry = registry; }
     static void provideGame(Game* game) { _game = game; }
 
   private:
     static AssetManager* _assetManager;
-    static Renderer* _renderer;
     static entt::registry* _registry;
     static Game* _game;
 };
