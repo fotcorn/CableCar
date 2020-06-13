@@ -3,10 +3,11 @@
 #include <iostream>
 
 #include "Components.h"
+#include "Level.h"
 #include "Services.h"
 
-bool Input::handleInput() {
-    entt::entity hoverEntity = handleMouse();
+bool Input::handleInput(entt::registry& reg) {
+    entt::entity hoverEntity = handleMouse(reg);
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
@@ -14,14 +15,14 @@ bool Input::handleInput() {
             case SDL_QUIT:
                 return false;
             case SDL_KEYUP:
-                handleKeyEvent(event, hoverEntity);
+                handleKeyEvent(reg, event, hoverEntity);
                 break;
         }
     }
     return true;
 }
 
-entt::entity Input::handleMouse() {
+entt::entity Input::handleMouse(entt::registry& reg) {
     int x, y;
     Uint32 mouseState = SDL_GetMouseState(&x, &y);
     glm::vec2 mousePosition(x, y);
@@ -29,8 +30,6 @@ entt::entity Input::handleMouse() {
     // find current hovered anchor (if any)
     float minDistance = std::numeric_limits<float>::max();
     entt::entity hoverEntity = entt::null;
-
-    entt::registry& reg = Services::registry();
 
     auto view = reg.view<HoverTarget>();
     for (auto entity : view) {
@@ -58,7 +57,7 @@ entt::entity Input::handleMouse() {
             // we do not actually add a Beam component to the temporary entity,
             // a temporary beam is not really part of a level
             const Sprite& start = reg.get<Sprite>(dragStart);
-            Services::game().initBeamSprite(tempDragBeam, start.position, mousePosition);
+            Level::initBeamSprite(reg, tempDragBeam, start.position, mousePosition);
         } else {
             dragStart = entt::null;
         }
@@ -68,7 +67,7 @@ entt::entity Input::handleMouse() {
     else if (mouseButtonDown && mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         if (reg.valid(dragStart)) {
             const Sprite& start = reg.get<Sprite>(dragStart);
-            Services::game().updateBeamSprite(tempDragBeam, start.position, mousePosition);
+            Level::updateBeamSprite(reg, tempDragBeam, start.position, mousePosition);
         }
     }
     // mouse was pressed before and is now released
@@ -77,10 +76,10 @@ entt::entity Input::handleMouse() {
             entt::entity dragEnd = hoverEntity;
             if (!reg.valid(dragEnd)) {
                 // drag ended in the world, create new anchor
-                dragEnd = Services::game().createAnchor(x, y);
+                dragEnd = Level::createAnchor(reg, x, y);
             }
             // create actual beam
-            Services::game().createBeam(dragStart, dragEnd);
+            Level::createBeam(reg, dragStart, dragEnd);
 
             // destroy temporary beam
             reg.destroy(tempDragBeam);
@@ -91,7 +90,7 @@ entt::entity Input::handleMouse() {
     return hoverEntity;
 }
 
-void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
+void Input::handleKeyEvent(entt::registry& reg, SDL_Event event, entt::entity hoverEntity) {
     SDL_Keycode key = event.key.keysym.sym;
     Uint16 mod = event.key.keysym.mod;
 
@@ -111,8 +110,8 @@ void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
             Services::game().setGameMode(Game::BUILD_MODE);
         }
     } else if (key == SDLK_DELETE && noModKeys) {
-        if (Services::registry().valid(hoverEntity)) {
-            Services::game().removeAnchor(hoverEntity);
+        if (reg.valid(hoverEntity)) {
+            Level::removeAnchor(reg, hoverEntity);
         }
     }
 }

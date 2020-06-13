@@ -78,9 +78,7 @@ void Renderer::drawTexture(const Sprite& sprite) {
     drawTexture(sprite, *sprite.texture.get());
 }
 
-void Renderer::render() {
-    entt::registry& reg = Services::registry();
-
+void Renderer::render(entt::registry& reg) {
     clear();
 
     entt::entity hoverEntity = entt::null;

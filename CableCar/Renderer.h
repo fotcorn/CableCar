@@ -18,7 +18,7 @@ class Renderer {
 
     SDL_Renderer* sdlRenderer() { return renderer; }
 
-    void render();
+    void render(entt::registry& reg);
 
   private:
     void clear();

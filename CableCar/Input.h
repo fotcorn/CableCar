@@ -9,12 +9,12 @@
 
 class Input {
   public:
-    bool handleInput();
+    bool handleInput(entt::registry& reg);
 
   private:
     // methods
-    entt::entity handleMouse();
-    void handleKeyEvent(SDL_Event event, entt::entity hoverEntity);
+    entt::entity handleMouse(entt::registry& reg);
+    void handleKeyEvent(entt::registry& reg, SDL_Event event, entt::entity hoverEntity);
 
     // data
     entt::entity dragStart = entt::null;
