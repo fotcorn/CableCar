@@ -14,12 +14,12 @@ GameLoop::GameLoop() {
     renderer = std::make_unique<Renderer>(1920, 1080);
     Services::provideRenderer(renderer.get());
 
-    level = std::make_unique<Level>();
-    Services::provideLevel(level.get());
+    game = std::make_unique<Game>();
+    Services::provideGame(game.get());
 
     input = std::make_unique<Input>();
 
-    level->loadLevel("level.png");
+    game->loadLevel("level.png");
 }
 
 void GameLoop::loop() {

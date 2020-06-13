@@ -58,7 +58,7 @@ entt::entity Input::handleMouse() {
             // we do not actually add a Beam component to the temporary entity,
             // a temporary beam is not really part of a level
             const Sprite& start = reg.get<Sprite>(dragStart);
-            Services::level().initBeamSprite(tempDragBeam, start.position, mousePosition);
+            Services::game().initBeamSprite(tempDragBeam, start.position, mousePosition);
         } else {
             dragStart = entt::null;
         }
@@ -68,7 +68,7 @@ entt::entity Input::handleMouse() {
     else if (mouseButtonDown && mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         if (reg.valid(dragStart)) {
             const Sprite& start = reg.get<Sprite>(dragStart);
-            Services::level().updateBeamSprite(tempDragBeam, start.position, mousePosition);
+            Services::game().updateBeamSprite(tempDragBeam, start.position, mousePosition);
         }
     }
     // mouse was pressed before and is now released
@@ -77,10 +77,10 @@ entt::entity Input::handleMouse() {
             entt::entity dragEnd = hoverEntity;
             if (!reg.valid(dragEnd)) {
                 // drag ended in the world, create new anchor
-                dragEnd = Services::level().createAnchor(x, y);
+                dragEnd = Services::game().createAnchor(x, y);
             }
             // create actual beam
-            Services::level().createBeam(dragStart, dragEnd);
+            Services::game().createBeam(dragStart, dragEnd);
 
             // destroy temporary beam
             reg.destroy(tempDragBeam);
@@ -101,18 +101,18 @@ void Input::handleKeyEvent(SDL_Event event, entt::entity hoverEntity) {
     if (key == SDLK_s && ctrlOnly) {
         std::cout << "s" << std::endl;
     } else if (key == SDLK_r && ctrlOnly) {
-        if (Services::level().gameMode() == Level::BUILD_MODE) {
-            Services::level().setGameMode(Level::SIMULATION_MODE);
+        if (Services::game().gameMode() == Game::BUILD_MODE) {
+            Services::game().setGameMode(Game::SIMULATION_MODE);
         } else {
-            Services::level().setGameMode(Level::BUILD_MODE);
+            Services::game().setGameMode(Game::BUILD_MODE);
         }
     } else if (key == SDLK_ESCAPE && noModKeys) {
-        if (Services::level().gameMode() == Level::SIMULATION_MODE) {
-            Services::level().setGameMode(Level::BUILD_MODE);
+        if (Services::game().gameMode() == Game::SIMULATION_MODE) {
+            Services::game().setGameMode(Game::BUILD_MODE);
         }
     } else if (key == SDLK_DELETE && noModKeys) {
         if (Services::registry().valid(hoverEntity)) {
-            Services::level().removeAnchor(hoverEntity);
+            Services::game().removeAnchor(hoverEntity);
         }
     }
 }

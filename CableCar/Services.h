@@ -4,7 +4,7 @@
 #include <entt/entt.hpp>
 
 #include "AssetManager.h"
-#include "Level.h"
+#include "Game.h"
 #include "Renderer.h"
 
 class Services {
@@ -21,18 +21,18 @@ class Services {
         assert(_registry != nullptr);
         return *_registry;
     }
-    static Level& level() {
-        assert(_level != nullptr);
-        return *_level;
+    static Game& game() {
+        assert(_game != nullptr);
+        return *_game;
     }
     static void provideAssetManager(AssetManager* assetManager) { _assetManager = assetManager; }
     static void provideRenderer(Renderer* renderer) { _renderer = renderer; }
     static void provideRegistry(entt::registry* registry) { _registry = registry; }
-    static void provideLevel(Level* level) { _level = level; }
+    static void provideGame(Game* game) { _game = game; }
 
   private:
     static AssetManager* _assetManager;
     static Renderer* _renderer;
     static entt::registry* _registry;
-    static Level* _level;
+    static Game* _game;
 };

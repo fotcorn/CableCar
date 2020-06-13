@@ -7,7 +7,7 @@
 #include "Components.h"
 #include "Texture.h"
 
-class Level {
+class Game {
   public:
     void loadLevel(const std::string& path);
 

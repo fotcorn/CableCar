@@ -1,4 +1,4 @@
-#include "Level.h"
+#include "Game.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <cassert>
@@ -18,7 +18,7 @@ enum class Layer : unsigned int {
     ANCHORS = 200,
 };
 
-entt::entity Level::createAnchor(const float x, const float y, const bool levelAnchor) {
+entt::entity Game::createAnchor(const float x, const float y, const bool levelAnchor) {
     auto anchor = buildRegistry.create();
 
     Sprite& sprite = buildRegistry.emplace<Sprite>(anchor);
@@ -34,7 +34,7 @@ entt::entity Level::createAnchor(const float x, const float y, const bool levelA
     return anchor;
 }
 
-void Level::removeAnchor(entt::entity anchor) {
+void Game::removeAnchor(entt::entity anchor) {
     Anchor& anchorComponent = buildRegistry.get<Anchor>(anchor);
     if (anchorComponent.levelAnchor) {
         // anchors loaded from the level cannot be deleted
@@ -50,12 +50,12 @@ void Level::removeAnchor(entt::entity anchor) {
     buildRegistry.destroy(anchor);
 }
 
-void Level::updateBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+void Game::updateBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
     Sprite& sprite = buildRegistry.get<Sprite>(beam);
     updateBeamSprite(sprite, startPosition, endPosition);
 }
 
-void Level::updateBeamSprite(Sprite& sprite, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+void Game::updateBeamSprite(Sprite& sprite, const glm::vec2 startPosition, const glm::vec2 endPosition) {
     const float length = glm::distance(startPosition, endPosition);
     const glm::vec2 center = (startPosition + endPosition) / 2.0f;
 
@@ -68,14 +68,14 @@ void Level::updateBeamSprite(Sprite& sprite, const glm::vec2 startPosition, cons
     sprite.rotation = angleDegree;
 }
 
-void Level::initBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
+void Game::initBeamSprite(const entt::entity beam, const glm::vec2 startPosition, const glm::vec2 endPosition) {
     Sprite& sprite = buildRegistry.emplace<Sprite>(beam);
     sprite.layer = static_cast<unsigned int>(Layer::BEAMS);
     sprite.texture = beamTexture;
     updateBeamSprite(sprite, startPosition, endPosition);
 }
 
-entt::entity Level::createBeam(const entt::entity startAnchor, const entt::entity endAnchor) {
+entt::entity Game::createBeam(const entt::entity startAnchor, const entt::entity endAnchor) {
     auto beam = buildRegistry.create();
     buildRegistry.emplace<Beam>(beam, startAnchor, endAnchor);
 
@@ -87,7 +87,7 @@ entt::entity Level::createBeam(const entt::entity startAnchor, const entt::entit
     return beam;
 }
 
-void Level::loadLevel(const std::string& path) {
+void Game::loadLevel(const std::string& path) {
     buildMode = true;
     buildRegistry.clear();
     simulationRegistry.clear();
@@ -138,11 +138,11 @@ void Level::loadLevel(const std::string& path) {
     SDL_FreeSurface(surface);
 }
 
-Level::GameMode Level::gameMode() {
+Game::GameMode Game::gameMode() {
     return buildMode ? GameMode::BUILD_MODE : GameMode::SIMULATION_MODE;
 }
 
-void Level::setGameMode(GameMode newMode) {
+void Game::setGameMode(GameMode newMode) {
     if (buildMode && newMode == GameMode::SIMULATION_MODE) {
         simulationRegistry.clear();
         // TODO: copy entities from build registry to simulation registry
@@ -156,7 +156,6 @@ void Level::setGameMode(GameMode newMode) {
             simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
             simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
-
 
         Services::provideRegistry(&simulationRegistry);
         buildMode = false;
