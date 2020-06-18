@@ -4,6 +4,7 @@
 #include <glm/geometric.hpp>
 #include <glm/vec2.hpp>
 #include <memory>
+#include <Box2D/Box2D.h>
 
 #include "Texture.h"
 
@@ -46,4 +47,8 @@ struct Anchor {
 struct Beam {
     entt::entity start;
     entt::entity end;
+};
+
+struct PhysicsBody {
+    b2Body* body;
 };

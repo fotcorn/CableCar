@@ -8,6 +8,7 @@
 #include "Components.h"
 #include "Input.h"
 #include "Renderer.h"
+#include "Simulation.h"
 #include "Texture.h"
 
 class Game {
@@ -29,6 +30,7 @@ class Game {
     std::unique_ptr<Renderer> renderer;
     std::unique_ptr<AssetManager> assetManager;
     std::unique_ptr<Input> input;
+    std::unique_ptr<Simulation> simulation;
 
     entt::registry buildRegistry;
     entt::registry simulationRegistry;

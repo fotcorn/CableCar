@@ -15,6 +15,7 @@ Game::Game() {
     Services::provideGame(this);
 
     input = std::make_unique<Input>();
+    simulation = std::make_unique<Simulation>();
 
     loadLevel("level.png");
 }
@@ -28,6 +29,7 @@ void Game::loop() {
         if (buildMode) {
             renderer->render(buildRegistry);
         } else {
+            simulation->tick(simulationRegistry);
             renderer->render(simulationRegistry);
         }
     }
@@ -48,7 +50,6 @@ Game::GameMode Game::gameMode() {
 void Game::setGameMode(GameMode newMode) {
     if (buildMode && newMode == GameMode::SIMULATION_MODE) {
         simulationRegistry.clear();
-        // TODO: copy entities from build registry to simulation registry
 
         entt::entity simulationLevelEntity = simulationRegistry.create();
         simulationRegistry.emplace<Sprite>(simulationLevelEntity, buildRegistry.get<Sprite>(levelEntity));
@@ -59,6 +60,15 @@ void Game::setGameMode(GameMode newMode) {
             simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
             simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
+
+        buildRegistry.view<Anchor, Sprite>().each([this](auto entity, Anchor& anchor, Sprite& sprite) {
+            std::ignore = entity;
+            entt::entity simulationEntity = simulationRegistry.create();
+            simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
+            simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
+        });
+
+        simulation->reset(simulationRegistry);
 
         buildMode = false;
     } else if (!buildMode && newMode == GameMode::BUILD_MODE) {
