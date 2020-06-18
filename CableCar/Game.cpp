@@ -61,10 +61,10 @@ void Game::setGameMode(GameMode newMode) {
             simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
 
-        buildRegistry.view<Anchor, Sprite>().each([this](auto entity, Anchor& anchor, Sprite& sprite) {
+        buildRegistry.view<Beam, Sprite>().each([this](auto entity, Beam& beam, Sprite& sprite) {
             std::ignore = entity;
             entt::entity simulationEntity = simulationRegistry.create();
-            simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
+            simulationRegistry.emplace<Beam>(simulationEntity, beam);
             simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
 

@@ -7,6 +7,6 @@ class VoxelWorld(ConanFile):
     'sdl2_image/2.0.5@bincrafters/stable',
     'glm/0.9.9.1@g-truc/stable',
     'entt/3.4.0@_/_',
-    'box2d/2.3.1@conan/stable',
+    'box2d/2.3.2.ef96a4f@conan/stable',
   ]
   generators = 'cmake',
