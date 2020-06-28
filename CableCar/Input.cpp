@@ -99,7 +99,7 @@ void Input::handleKeyEvent(entt::registry& reg, SDL_Event event, entt::entity ho
 
     if (key == SDLK_s && ctrlOnly) {
         std::cout << "s" << std::endl;
-    } else if (key == SDLK_r && ctrlOnly) {
+    } else if (key == SDLK_r && noModKeys) {
         if (Services::game().gameMode() == Game::BUILD_MODE) {
             Services::game().setGameMode(Game::SIMULATION_MODE);
         } else {
