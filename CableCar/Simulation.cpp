@@ -23,7 +23,7 @@ void Simulation::reset(entt::registry& reg) {
     reg.view<Beam, Sprite>().each([this, &reg](auto beamEntity, Beam& beam, Sprite& sprite) {
         // body
         b2BodyDef bodyDef;
-        bodyDef.type = b2_staticBody;
+        bodyDef.type = b2_dynamicBody;
         bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO, -sprite.position.y / WORLD_TO_PHYSICS_RATIO);
         bodyDef.angle = glm::radians(sprite.rotation);
         b2Body* beamBody = world.CreateBody(&bodyDef);
