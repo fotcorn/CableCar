@@ -14,5 +14,4 @@ class Simulation {
     b2Body* getAnchorBody(entt::registry& reg, entt::entity anchorEntity);
 
     b2World world;
-    b2Body* worldBody;
 };

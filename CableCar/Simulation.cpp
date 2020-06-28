@@ -10,15 +10,9 @@ constexpr float TIME_STEP = 1.0f / 60.0f;
 
 constexpr float WORLD_TO_PHYSICS_RATIO = 20.0f;
 
-Simulation::Simulation() : world(b2Vec2(0.0f, -10.0f)), worldBody(nullptr) {}
+Simulation::Simulation() : world(b2Vec2(0.0f, -10.0f)) {}
 
 void Simulation::reset(entt::registry& reg) {
-    // initialize world body
-    b2BodyDef worldBodyDef;
-    worldBodyDef.type = b2_staticBody;
-    worldBodyDef.position.Set(0.0f, 0.0f);
-    worldBody = world.CreateBody(&worldBodyDef);
-
     // iterate over Beams, create beams, create anchors
     reg.view<Beam, Sprite>().each([this, &reg](auto beamEntity, Beam& beam, Sprite& sprite) {
         // body
@@ -48,45 +42,41 @@ void Simulation::reset(entt::registry& reg) {
         revoluteJointDef.bodyA = startBody;
         revoluteJointDef.bodyB = beamBody;
         revoluteJointDef.localAnchorA.Set(0, 0);  // axis is at the center of the anchor
-        revoluteJointDef.localAnchorB.Set(0, sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
+        revoluteJointDef.localAnchorB.Set(
+            0, sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);  //-sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
         world.CreateJoint(&revoluteJointDef);
 
         revoluteJointDef.bodyA = endBody;
         revoluteJointDef.bodyB = beamBody;
         revoluteJointDef.localAnchorA.Set(0, 0);  // axis is at the center of the anchor
-        revoluteJointDef.localAnchorB.Set(0, -sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
+        revoluteJointDef.localAnchorB.Set(
+            0,
+            sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);  // sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
         world.CreateJoint(&revoluteJointDef);
     });
 }
 
 b2Body* Simulation::getAnchorBody(entt::registry& reg, entt::entity anchorEntity) {
     Anchor& anchor = reg.get<Anchor>(anchorEntity);
-    if (anchor.levelAnchor) {
-        // anchors from the level should not move, we therefore do not create
-        // separate bodies for them, and just use the static world body for it
-        return worldBody;
+    if (reg.has<PhysicsBody>(anchorEntity)) {
+        return reg.get<PhysicsBody>(anchorEntity).body;
     } else {
-        if (reg.has<PhysicsBody>(anchorEntity)) {
-            return reg.get<PhysicsBody>(anchorEntity).body;
-        } else {
-            Sprite& sprite = reg.get<Sprite>(anchorEntity);
-            b2BodyDef bodyDef;
-            bodyDef.type = b2_dynamicBody;
-            bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO,
-                                 -sprite.position.y / WORLD_TO_PHYSICS_RATIO);
-            b2Body* body = world.CreateBody(&bodyDef);
+        Sprite& sprite = reg.get<Sprite>(anchorEntity);
+        b2BodyDef bodyDef;
+        bodyDef.type = anchor.levelAnchor ? b2_staticBody : b2_dynamicBody;
+        bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO, -sprite.position.y / WORLD_TO_PHYSICS_RATIO);
+        b2Body* body = world.CreateBody(&bodyDef);
 
-            b2PolygonShape dynamicBox;
-            dynamicBox.SetAsBox(1.0f, 1.0f);
-            b2FixtureDef fixtureDef;
-            fixtureDef.shape = &dynamicBox;
-            fixtureDef.density = 1.0f;
-            fixtureDef.friction = 0.3f;
-            body->CreateFixture(&fixtureDef);
+        b2PolygonShape dynamicBox;
+        dynamicBox.SetAsBox(1.0f, 1.0f);
+        b2FixtureDef fixtureDef;
+        fixtureDef.shape = &dynamicBox;
+        fixtureDef.density = 1.0f;
+        fixtureDef.friction = 0.3f;
+        body->CreateFixture(&fixtureDef);
 
-            reg.emplace<PhysicsBody>(anchorEntity, body);
-            return body;
-        }
+        reg.emplace<PhysicsBody>(anchorEntity, body);
+        return body;
     }
 }
 
