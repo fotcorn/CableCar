@@ -11,5 +11,8 @@ class Simulation {
     void tick(entt::registry& reg);
 
   private:
+    b2Body* getAnchorBody(entt::registry& reg, entt::entity anchorEntity);
+
     b2World world;
+    b2Body* worldBody;
 };

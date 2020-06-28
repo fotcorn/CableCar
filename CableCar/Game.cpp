@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include <unordered_map>
+
 #include "CachingAssetManager.h"
 #include "FilesystemAssetManager.h"
 #include "Level.h"
@@ -54,17 +56,22 @@ void Game::setGameMode(GameMode newMode) {
         entt::entity simulationLevelEntity = simulationRegistry.create();
         simulationRegistry.emplace<Sprite>(simulationLevelEntity, buildRegistry.get<Sprite>(levelEntity));
 
-        buildRegistry.view<Anchor, Sprite>().each([this](auto entity, Anchor& anchor, Sprite& sprite) {
-            std::ignore = entity;
-            entt::entity simulationEntity = simulationRegistry.create();
-            simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
-            simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
-        });
+        std::unordered_map<entt::entity, entt::entity> buildToSimulationMap;
 
-        buildRegistry.view<Beam, Sprite>().each([this](auto entity, Beam& beam, Sprite& sprite) {
+        buildRegistry.view<Anchor, Sprite>().each(
+            [this, &buildToSimulationMap](auto entity, Anchor& anchor, Sprite& sprite) {
+                entt::entity simulationEntity = simulationRegistry.create();
+                simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
+                simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
+
+                buildToSimulationMap[entity] = simulationEntity;
+            });
+
+        buildRegistry.view<Beam, Sprite>().each([this, &buildToSimulationMap](auto entity, Beam& beam, Sprite& sprite) {
             std::ignore = entity;
             entt::entity simulationEntity = simulationRegistry.create();
-            simulationRegistry.emplace<Beam>(simulationEntity, beam);
+            simulationRegistry.emplace<Beam>(simulationEntity, buildToSimulationMap[beam.start],
+                                             buildToSimulationMap[beam.end]);
             simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
 
