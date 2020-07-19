@@ -31,8 +31,8 @@ Renderer::Renderer(int screenWidth, int screenHeight) {
         viewportWidth = static_cast<int>(viewportHeight * VIRTUAL_ASPECT_RATIO + 0.5f);
     }
 
-    viewportToVirtualX = static_cast<float>(viewportWidth) / static_cast<float>(VIRTUAL_WIDTH);
-    viewportToVirtualY = static_cast<float>(viewportHeight) / static_cast<float>(VIRTUAL_HEIGHT);
+    viewportToVirtualX = static_cast<float>(viewportWidth) / static_cast<float>(WORLD_WIDTH);
+    viewportToVirtualY = static_cast<float>(viewportHeight) / static_cast<float>(WORLD_HEIGHT);
 
     int viewportX = (screenWidth / 2) - (viewportWidth / 2);
     int viewportY = (screenHeight / 2) - (viewportHeight / 2);

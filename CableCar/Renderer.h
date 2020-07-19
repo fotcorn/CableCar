@@ -6,10 +6,9 @@
 
 #include "Components.h"
 #include "Texture.h"
+#include "GlobalConstants.h"
 
-constexpr int VIRTUAL_WIDTH = 1920;
-constexpr int VIRTUAL_HEIGHT = 1080;
-constexpr float VIRTUAL_ASPECT_RATIO = static_cast<float>(VIRTUAL_WIDTH) / static_cast<float>(VIRTUAL_HEIGHT);
+constexpr float VIRTUAL_ASPECT_RATIO = static_cast<float>(WORLD_WIDTH) / static_cast<float>(WORLD_HEIGHT);
 
 class Renderer {
   public:
