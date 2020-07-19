@@ -78,9 +78,7 @@ void Renderer::drawTexture(const Sprite& sprite) {
     drawTexture(sprite, *sprite.texture.get());
 }
 
-void Renderer::render(entt::registry& reg) {
-    clear();
-
+void Renderer::renderWorld(entt::registry& reg) {
     entt::entity hoverEntity = entt::null;
     auto view = reg.view<CurrentHover>();
     if (const auto it = view.begin(); it != view.end()) {
@@ -103,6 +101,4 @@ void Renderer::render(entt::registry& reg) {
         auto [sprite, hoverTarget] = reg.get<Sprite, HoverTarget>(hoverEntity);
         drawTexture(sprite, *hoverTarget.hoverTexture.get());
     }
-
-    flip();
 }

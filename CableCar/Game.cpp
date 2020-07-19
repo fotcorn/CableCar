@@ -17,7 +17,7 @@ Game::Game() {
     Services::provideGame(this);
 
     input = std::make_unique<Input>();
-    simulation = std::make_unique<Simulation>();
+    simulation = std::make_unique<Simulation>(renderer->sdlRenderer());
 
     loadLevel("level.png");
 }
@@ -29,10 +29,15 @@ void Game::loop() {
         }
 
         if (buildMode) {
-            renderer->render(buildRegistry);
+            renderer->clear();
+            renderer->renderWorld(buildRegistry);
+            renderer->flip();
         } else {
             simulation->tick(simulationRegistry);
-            renderer->render(simulationRegistry);
+            renderer->clear();
+            renderer->renderWorld(simulationRegistry);
+            simulation->debugDraw();
+            renderer->flip();
         }
     }
 }

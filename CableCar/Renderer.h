@@ -17,11 +17,11 @@ class Renderer {
 
     SDL_Renderer* sdlRenderer() { return renderer; }
 
-    void render(entt::registry& reg);
-
-  private:
+    void renderWorld(entt::registry& reg);
     void clear();
     void flip();
+
+  private:
     void drawTexture(const Sprite& sprite);
     void drawTexture(const Sprite& sprite, const Texture& overrideTexture);
 
