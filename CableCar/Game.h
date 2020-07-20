@@ -26,15 +26,21 @@ class Game {
 
     void loop();
 
+    AssetManager& assetManager() { return *m_assetManager; }
+    Renderer& renderer() { return *m_renderer; }
+    static Game& get() { return *s_game; }
+
   private:
-    std::unique_ptr<Renderer> renderer;
-    std::unique_ptr<AssetManager> assetManager;
-    std::unique_ptr<Input> input;
-    std::unique_ptr<Simulation> simulation;
+    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<AssetManager> m_assetManager;
+    std::unique_ptr<Input> m_input;
+    std::unique_ptr<Simulation> m_simulation;
 
-    entt::registry buildRegistry;
-    entt::registry simulationRegistry;
-    bool buildMode = true;
+    entt::registry m_buildRegistry;
+    entt::registry m_simulationRegistry;
+    bool m_buildMode = true;
 
-    entt::entity levelEntity;
+    entt::entity m_levelEntity;
+
+    static Game* s_game;
 };

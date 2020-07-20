@@ -1,6 +1,6 @@
 #include "Level.h"
 
-#include "Services.h"
+#include "Game.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <cassert>
@@ -24,7 +24,7 @@ const char* ANCHOR_HOVER_TEXTURE = "rope_anchor_hover.png";
 const char* BEAM_TEXTURE = "pipe.png";
 
 entt::entity load(entt::registry& reg, const std::string& path) {
-    std::shared_ptr<SDL_Surface> surface = Services::assetManager().loadImage(path);
+    std::shared_ptr<SDL_Surface> surface = Game::get().assetManager().loadImage(path);
 
     // levels should all be transparent pngs with 32bit depth and uniform row access
     assert(surface->format->BytesPerPixel == 4);
@@ -56,7 +56,7 @@ entt::entity load(entt::registry& reg, const std::string& path) {
     sprite.position = glm::vec2(0, 0);
     sprite.dimensions = glm::vec2(1920, 1080);
     sprite.layer = static_cast<unsigned int>(Layer::ANCHORS);
-    sprite.texture = Services::assetManager().loadTexture(path);
+    sprite.texture = Game::get().assetManager().loadTexture(path);
 
     return levelEntity;
 }
@@ -69,9 +69,9 @@ entt::entity createAnchor(entt::registry& reg, const float x, const float y, con
     sprite.dimensions = glm::vec2(ANCHOR_SIZE, ANCHOR_SIZE);
     sprite.origin = glm::vec2(ANCHOR_RADIUS, ANCHOR_RADIUS);
     sprite.layer = static_cast<unsigned int>(Layer::BACKGROUND);
-    sprite.texture = Services::assetManager().loadTexture(ANCHOR_TEXTURE);
+    sprite.texture = Game::get().assetManager().loadTexture(ANCHOR_TEXTURE);
 
-    reg.emplace<HoverTarget>(anchor, Services::assetManager().loadTexture(ANCHOR_HOVER_TEXTURE));
+    reg.emplace<HoverTarget>(anchor, Game::get().assetManager().loadTexture(ANCHOR_HOVER_TEXTURE));
     reg.emplace<CollisionCircle>(anchor, glm::vec2(x, y), ANCHOR_RADIUS);
     reg.emplace<Anchor>(anchor, levelAnchor);
     return anchor;
@@ -120,7 +120,7 @@ void initBeamSprite(entt::registry& reg,
                     const glm::vec2 endPosition) {
     Sprite& sprite = reg.emplace<Sprite>(beam);
     sprite.layer = static_cast<unsigned int>(Layer::BEAMS);
-    sprite.texture = Services::assetManager().loadTexture(BEAM_TEXTURE);
+    sprite.texture = Game::get().assetManager().loadTexture(BEAM_TEXTURE);
     updateBeamSprite(sprite, startPosition, endPosition);
 }
 

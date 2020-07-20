@@ -1,11 +1,10 @@
 #pragma once
 
 #include <Box2D/Box2D.h>
-#include <SDL2/SDL.h>
 
 class Box2DDebugDraw : public b2Draw {
   public:
-    Box2DDebugDraw(SDL_Renderer* renderer, float scaleFactor);
+    Box2DDebugDraw(float scaleFactor);
 
     /// Draw a closed polygon provided in CCW order.
     void DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) override;
@@ -30,6 +29,5 @@ class Box2DDebugDraw : public b2Draw {
     void DrawPoint(const b2Vec2& p, float32 size, const b2Color& color) override;
 
   private:
-    SDL_Renderer* m_renderer;
     float m_scaleFactor;
 };

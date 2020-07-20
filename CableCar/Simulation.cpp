@@ -11,8 +11,7 @@ constexpr float TIME_STEP = 1.0f / 60.0f;
 
 constexpr float WORLD_TO_PHYSICS_RATIO = 20.0f;
 
-Simulation::Simulation(SDL_Renderer* renderer)
-    : m_world(b2Vec2(0.0f, -10.0f)), m_debugDraw(renderer, WORLD_TO_PHYSICS_RATIO) {
+Simulation::Simulation() : m_world(b2Vec2(0.0f, -10.0f)), m_debugDraw(WORLD_TO_PHYSICS_RATIO) {
     m_world.SetDebugDraw(&m_debugDraw);
     m_debugDraw.SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit);
 }

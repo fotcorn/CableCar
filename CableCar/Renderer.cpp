@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "Services.h"
+#include "SDL2_gfxPrimitives.h"
 
 Renderer::Renderer(int screenWidth, int screenHeight) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -101,4 +101,32 @@ void Renderer::renderWorld(entt::registry& reg) {
         auto [sprite, hoverTarget] = reg.get<Sprite, HoverTarget>(hoverEntity);
         drawTexture(sprite, *hoverTarget.hoverTexture.get());
     }
+}
+
+int Renderer::polygonRGBA(Sint16* vx, Sint16* vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    for (int i = 0; i < n; i++) {
+        vx[i] = vx[i] * viewportToVirtualX;
+        vy[i] = vy[i] * viewportToVirtualY;
+    }
+    return ::polygonRGBA(renderer, vx, vy, n, r, g, b, a);
+}
+int Renderer::filledPolygonRGBA(Sint16* vx, Sint16* vy, int n, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    for (int i = 0; i < n; i++) {
+        vx[i] = vx[i] * viewportToVirtualX;
+        vy[i] = vy[i] * viewportToVirtualY;
+    }
+    return ::filledPolygonRGBA(renderer, vx, vy, n, r, g, b, a);
+}
+int Renderer::circleRGBA(Sint16 x, Sint16 y, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    return ::circleRGBA(renderer, x * viewportToVirtualX, y * viewportToVirtualY, rad, r, g, b, a);
+}
+int Renderer::filledCircleRGBA(Sint16 x, Sint16 y, Sint16 rad, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    return ::filledCircleRGBA(renderer, x * viewportToVirtualX, y * viewportToVirtualY, rad, r, g, b, a);
+}
+int Renderer::lineRGBA(Sint16 x1, Sint16 y1, Sint16 x2, Sint16 y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    return ::lineRGBA(renderer, x1 * viewportToVirtualX, y1 * viewportToVirtualY, x2 * viewportToVirtualX,
+                      y2 * viewportToVirtualY, r, g, b, a);
+}
+int Renderer::pixelRGBA(Sint16 x, Sint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+    return ::pixelRGBA(renderer, x * viewportToVirtualX, y * viewportToVirtualY, r, g, b, a);
 }

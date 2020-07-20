@@ -1,4 +1,4 @@
 #include "Services.h"
 
-AssetManager* Services::_assetManager = nullptr;
-Game* Services::_game = nullptr;
+AssetManager* Game::get()._assetManager = nullptr;
+Game* Game::get()._game = nullptr;

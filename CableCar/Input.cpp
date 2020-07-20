@@ -4,7 +4,7 @@
 
 #include "Components.h"
 #include "Level.h"
-#include "Services.h"
+#include "Game.h"
 
 bool Input::handleInput(entt::registry& reg) {
     entt::entity hoverEntity = handleMouse(reg);
@@ -76,7 +76,7 @@ entt::entity Input::handleMouse(entt::registry& reg) {
             entt::entity dragEnd = hoverEntity;
             if (!reg.valid(dragEnd)) {
                 // drag ended in the world, create new anchor
-                dragEnd = Level::createAnchor(reg, x, y);
+                dragEnd = Level::createAnchor(reg, static_cast<float>(x), static_cast<float>(y));
             }
             // create actual beam
             Level::createBeam(reg, dragStart, dragEnd);
@@ -100,14 +100,14 @@ void Input::handleKeyEvent(entt::registry& reg, SDL_Event event, entt::entity ho
     if (key == SDLK_s && ctrlOnly) {
         std::cout << "s" << std::endl;
     } else if (key == SDLK_r && noModKeys) {
-        if (Services::game().gameMode() == Game::BUILD_MODE) {
-            Services::game().setGameMode(Game::SIMULATION_MODE);
+        if (Game::get().gameMode() == Game::BUILD_MODE) {
+            Game::get().setGameMode(Game::SIMULATION_MODE);
         } else {
-            Services::game().setGameMode(Game::BUILD_MODE);
+            Game::get().setGameMode(Game::BUILD_MODE);
         }
     } else if (key == SDLK_ESCAPE && noModKeys) {
-        if (Services::game().gameMode() == Game::SIMULATION_MODE) {
-            Services::game().setGameMode(Game::BUILD_MODE);
+        if (Game::get().gameMode() == Game::SIMULATION_MODE) {
+            Game::get().setGameMode(Game::BUILD_MODE);
         }
     } else if (key == SDLK_DELETE && noModKeys) {
         if (reg.valid(hoverEntity)) {

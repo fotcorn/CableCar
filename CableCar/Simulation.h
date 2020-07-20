@@ -8,7 +8,7 @@
 
 class Simulation {
   public:
-    Simulation(SDL_Renderer* renderer);
+    Simulation();
     void reset(entt::registry& reg);
     void tick(entt::registry& reg);
     void debugDraw();

@@ -5,86 +5,86 @@
 #include "CachingAssetManager.h"
 #include "FilesystemAssetManager.h"
 #include "Level.h"
-#include "Services.h"
+
+Game* Game::s_game = nullptr;
 
 Game::Game() {
-    renderer = std::make_unique<Renderer>(1920, 1080);
+    s_game = this;
 
-    assetManager = std::make_unique<CachingAssetManager>(
-        std::make_unique<FilesystemAssetManager>("data", renderer->sdlRenderer()));
-    Services::provideAssetManager(assetManager.get());
+    m_renderer = std::make_unique<Renderer>(1920, 1080);
 
-    Services::provideGame(this);
+    m_assetManager = std::make_unique<CachingAssetManager>(
+        std::make_unique<FilesystemAssetManager>("data", m_renderer->sdlRenderer()));
 
-    input = std::make_unique<Input>();
-    simulation = std::make_unique<Simulation>(renderer->sdlRenderer());
+    m_input = std::make_unique<Input>();
+    m_simulation = std::make_unique<Simulation>();
 
     loadLevel("level.png");
 }
 
 void Game::loop() {
     while (true) {
-        if (!input->handleInput(buildRegistry)) {
+        if (!m_input->handleInput(m_buildRegistry)) {
             break;
         }
 
-        if (buildMode) {
-            renderer->clear();
-            renderer->renderWorld(buildRegistry);
-            renderer->flip();
+        if (m_buildMode) {
+            m_renderer->clear();
+            m_renderer->renderWorld(m_buildRegistry);
+            m_renderer->flip();
         } else {
-            simulation->tick(simulationRegistry);
-            renderer->clear();
-            renderer->renderWorld(simulationRegistry);
-            simulation->debugDraw();
-            renderer->flip();
+            m_simulation->tick(m_simulationRegistry);
+            m_renderer->clear();
+            m_renderer->renderWorld(m_simulationRegistry);
+            m_simulation->debugDraw();
+            m_renderer->flip();
         }
     }
 }
 
 void Game::loadLevel(const std::string& path) {
-    buildMode = true;
-    buildRegistry.clear();
-    simulationRegistry.clear();
+    m_buildMode = true;
+    m_buildRegistry.clear();
+    m_simulationRegistry.clear();
 
-    levelEntity = Level::load(buildRegistry, path);
+    m_levelEntity = Level::load(m_buildRegistry, path);
 }
 
 Game::GameMode Game::gameMode() {
-    return buildMode ? GameMode::BUILD_MODE : GameMode::SIMULATION_MODE;
+    return m_buildMode ? GameMode::BUILD_MODE : GameMode::SIMULATION_MODE;
 }
 
 void Game::setGameMode(GameMode newMode) {
-    if (buildMode && newMode == GameMode::SIMULATION_MODE) {
-        simulationRegistry.clear();
+    if (m_buildMode && newMode == GameMode::SIMULATION_MODE) {
+        m_simulationRegistry.clear();
 
-        entt::entity simulationLevelEntity = simulationRegistry.create();
-        simulationRegistry.emplace<Sprite>(simulationLevelEntity, buildRegistry.get<Sprite>(levelEntity));
+        entt::entity simulationLevelEntity = m_simulationRegistry.create();
+        m_simulationRegistry.emplace<Sprite>(simulationLevelEntity, m_buildRegistry.get<Sprite>(m_levelEntity));
 
         std::unordered_map<entt::entity, entt::entity> buildToSimulationMap;
 
-        buildRegistry.view<Anchor, Sprite>().each(
+        m_buildRegistry.view<Anchor, Sprite>().each(
             [this, &buildToSimulationMap](auto entity, Anchor& anchor, Sprite& sprite) {
-                entt::entity simulationEntity = simulationRegistry.create();
-                simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
-                simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
+                entt::entity simulationEntity = m_simulationRegistry.create();
+                m_simulationRegistry.emplace<Anchor>(simulationEntity, anchor);
+                m_simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
 
                 buildToSimulationMap[entity] = simulationEntity;
             });
 
-        buildRegistry.view<Beam, Sprite>().each([this, &buildToSimulationMap](auto entity, Beam& beam, Sprite& sprite) {
+        m_buildRegistry.view<Beam, Sprite>().each([this, &buildToSimulationMap](auto entity, Beam& beam, Sprite& sprite) {
             std::ignore = entity;
-            entt::entity simulationEntity = simulationRegistry.create();
-            simulationRegistry.emplace<Beam>(simulationEntity, buildToSimulationMap[beam.start],
+            entt::entity simulationEntity = m_simulationRegistry.create();
+            m_simulationRegistry.emplace<Beam>(simulationEntity, buildToSimulationMap[beam.start],
                                              buildToSimulationMap[beam.end]);
-            simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
+            m_simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
 
-        simulation->reset(simulationRegistry);
+        m_simulation->reset(m_simulationRegistry);
 
-        buildMode = false;
-    } else if (!buildMode && newMode == GameMode::BUILD_MODE) {
-        simulationRegistry.clear();
-        buildMode = true;
+        m_buildMode = false;
+    } else if (!m_buildMode && newMode == GameMode::BUILD_MODE) {
+        m_simulationRegistry.clear();
+        m_buildMode = true;
     }
 }

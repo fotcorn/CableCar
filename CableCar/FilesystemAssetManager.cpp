@@ -1,6 +1,6 @@
 #include "FilesystemAssetManager.h"
 
-#include "Services.h"
+#include "Game.h"
 
 namespace fs = ghc::filesystem;
 
@@ -42,7 +42,7 @@ std::shared_ptr<SDL_Surface> FilesystemAssetManager::loadImage(std::string name)
 }
 
 std::shared_ptr<Texture> FilesystemAssetManager::loadTexture(std::string name) {
-    std::shared_ptr<SDL_Surface> surface = Services::assetManager().loadImage(name);
+    std::shared_ptr<SDL_Surface> surface = Game::get().assetManager().loadImage(name);
 
     int width = surface->w;
     int height = surface->h;
