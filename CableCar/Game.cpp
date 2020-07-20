@@ -56,6 +56,7 @@ Game::GameMode Game::gameMode() {
 
 void Game::setGameMode(GameMode newMode) {
     if (m_buildMode && newMode == GameMode::SIMULATION_MODE) {
+        m_simulation->reset(m_simulationRegistry);
         m_simulationRegistry.clear();
 
         entt::entity simulationLevelEntity = m_simulationRegistry.create();
@@ -80,11 +81,10 @@ void Game::setGameMode(GameMode newMode) {
             m_simulationRegistry.emplace<Sprite>(simulationEntity, sprite);
         });
 
-        m_simulation->reset(m_simulationRegistry);
+        m_simulation->init(m_simulationRegistry);
 
         m_buildMode = false;
     } else if (!m_buildMode && newMode == GameMode::BUILD_MODE) {
-        m_simulationRegistry.clear();
         m_buildMode = true;
     }
 }

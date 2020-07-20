@@ -26,7 +26,7 @@ float flipDegreeAngle(float angleDegree) {
 }
 }  // namespace
 
-void Simulation::reset(entt::registry& reg) {
+void Simulation::init(entt::registry& reg) {
     // iterate over Beams, create beams, create anchors
     reg.view<Beam, Sprite>().each([this, &reg](auto beamEntity, Beam& beam, Sprite& sprite) {
         // body
@@ -68,6 +68,13 @@ void Simulation::reset(entt::registry& reg) {
             0,
             sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);  // sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
         m_world.CreateJoint(&revoluteJointDef);
+    });
+}
+
+void Simulation::reset(entt::registry& reg) {
+    reg.view<PhysicsBody>().each([this](auto entity, PhysicsBody& body) {
+        m_world.DestroyBody(body.body);
+        (void)entity;
     });
 }
 

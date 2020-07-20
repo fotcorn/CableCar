@@ -10,6 +10,7 @@ class Simulation {
   public:
     Simulation();
     void reset(entt::registry& reg);
+    void init(entt::registry& reg);
     void tick(entt::registry& reg);
     void debugDraw();
 
