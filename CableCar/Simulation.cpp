@@ -16,31 +16,22 @@ Simulation::Simulation() : m_world(b2Vec2(0.0f, -10.0f)), m_debugDraw(WORLD_TO_P
     m_debugDraw.SetFlags(b2Draw::e_shapeBit | b2Draw::e_jointBit | b2Draw::e_centerOfMassBit);
 }
 
-namespace {
-float flipDegreeAngle(float angleDegree) {
-    float angle = 180 - angleDegree;
-    if (angle < 0) {
-        angle = angle + 360;
-    }
-    return angle;
-}
-}  // namespace
-
 void Simulation::init(entt::registry& reg) {
     // iterate over Beams, create beams, create anchors
     reg.view<Beam, Sprite>().each([this, &reg](auto beamEntity, Beam& beam, Sprite& sprite) {
         // body
         b2BodyDef bodyDef;
         bodyDef.type = b2_dynamicBody;
-        bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO, -sprite.position.y / WORLD_TO_PHYSICS_RATIO);
+        bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO, sprite.position.y / WORLD_TO_PHYSICS_RATIO);
         // mirror horizontally
-        bodyDef.angle = glm::radians(flipDegreeAngle(sprite.rotation));
+        bodyDef.angle = glm::radians(sprite.rotation);
         b2Body* beamBody = m_world.CreateBody(&bodyDef);
         reg.emplace<PhysicsBody>(beamEntity, beamBody);
 
         // fixture
         b2PolygonShape dynamicBox;
-        dynamicBox.SetAsBox(sprite.dimensions.x / WORLD_TO_PHYSICS_RATIO, sprite.dimensions.y / WORLD_TO_PHYSICS_RATIO);
+        dynamicBox.SetAsBox(sprite.dimensions.x / WORLD_TO_PHYSICS_RATIO / 2,
+                            sprite.dimensions.y / WORLD_TO_PHYSICS_RATIO / 2);
         b2FixtureDef fixtureDef;
         fixtureDef.shape = &dynamicBox;
         fixtureDef.density = 1.0f;
@@ -50,23 +41,19 @@ void Simulation::init(entt::registry& reg) {
         // joints
         b2Body* startBody = getAnchorBody(reg, beam.start);
         b2Body* endBody = getAnchorBody(reg, beam.end);
-
         b2RevoluteJointDef revoluteJointDef;
         revoluteJointDef.collideConnected = false;
 
         revoluteJointDef.bodyA = startBody;
         revoluteJointDef.bodyB = beamBody;
         revoluteJointDef.localAnchorA.Set(0, 0);  // axis is at the center of the anchor
-        revoluteJointDef.localAnchorB.Set(
-            0, sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);  // sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
+        revoluteJointDef.localAnchorB.Set(-sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO, 0);
         m_world.CreateJoint(&revoluteJointDef);
 
         revoluteJointDef.bodyA = endBody;
         revoluteJointDef.bodyB = beamBody;
         revoluteJointDef.localAnchorA.Set(0, 0);  // axis is at the center of the anchor
-        revoluteJointDef.localAnchorB.Set(
-            0,
-            sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);  // sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO);
+        revoluteJointDef.localAnchorB.Set(sprite.dimensions.x / 2 / WORLD_TO_PHYSICS_RATIO, 0);
         m_world.CreateJoint(&revoluteJointDef);
     });
 }
@@ -86,8 +73,7 @@ b2Body* Simulation::getAnchorBody(entt::registry& reg, entt::entity anchorEntity
         Sprite& sprite = reg.get<Sprite>(anchorEntity);
         b2BodyDef bodyDef;
         bodyDef.type = anchor.levelAnchor ? b2_staticBody : b2_dynamicBody;
-        bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO,
-                             (WORLD_WIDTH - sprite.position.y) / WORLD_TO_PHYSICS_RATIO);
+        bodyDef.position.Set(sprite.position.x / WORLD_TO_PHYSICS_RATIO, sprite.position.y / WORLD_TO_PHYSICS_RATIO);
         b2Body* body = m_world.CreateBody(&bodyDef);
 
         b2PolygonShape dynamicBox;
@@ -110,9 +96,8 @@ void Simulation::tick(entt::registry& reg) {
         std::ignore = entity;
         b2Vec2 position = body.body->GetPosition();
         float angle = body.body->GetAngle();
-        sprite.position =
-            glm::vec2(position.x * WORLD_TO_PHYSICS_RATIO, WORLD_WIDTH - (position.y * WORLD_TO_PHYSICS_RATIO));
-        sprite.rotation = flipDegreeAngle(glm ::degrees(angle));
+        sprite.position = glm::vec2(position.x * WORLD_TO_PHYSICS_RATIO, position.y * WORLD_TO_PHYSICS_RATIO);
+        sprite.rotation = glm::degrees(angle);
     });
 }
 
