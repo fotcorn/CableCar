@@ -1,0 +1,25 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: sudo apt-get install -y ninja-build cmake
+    - name: Install conan
+      run: sudo pip install conan
+    - name: build
+      run: mkdir build
+    - name: build
+      working-directory: ./build
+      run: |
+        conan install .. --build=missing
+        cmake -G Ninja ..
+        ninja
